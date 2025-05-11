@@ -11,13 +11,26 @@ const client = new MongoClient(process.env.ATLAS_URI, {
   }
 });
 
-let database 
+let database;
 
 module.exports = {
-  connectToServer: () => {
-    database = client.db("meatCatalog")
+  connectToServer: async () => {
+    console.log("Attempting to connect to MongoDB...");
+
+    try {
+      await client.connect();
+      database = client.db("meatCatalog");
+      console.log("Successfully connected to MongoDB.");
+    } catch (err) {
+      console.error("MongoDB connection error:", err);
+      throw err;
+    }
   },
+
   getDb: () => {
+    if (!database) {
+      throw new Error("Database connection has not been established. Call connectToServer first.");
+    }
     return database;
   }
-}
+};
