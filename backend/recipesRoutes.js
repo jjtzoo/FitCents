@@ -5,7 +5,7 @@ const { ObjectId } = require("mongodb")
 let recipesRoute = express.Router();
 
 // #1 Retrieve All
-// http://localhost:3000/posts
+// http://localhost:3000/recipes
 recipesRoute.route("/recipes").get(async (request, response) => {
     let db = database.getDb();
     let data = await db.collection("recipes").find({}).toArray();
@@ -32,7 +32,7 @@ recipesRoute.route("/recipes/:id").get(async (request, response) => {
 // #3 Create One
 recipesRoute.route("/recipe").post(async (request, response, next) => {
     try {
-        const db = database.getDb
+        const db = database.getDb();
 
         const {
             _id,
@@ -77,11 +77,10 @@ recipesRoute.route("/recipe").post(async (request, response, next) => {
 
 // #4 Update One
 
-recipesRoute.route("/recipe").put(async (request, response, next) => {
+recipesRoute.route("/recipe/:id").put(async (request, response) => {
     try {
-        const db = database.getDb
+        const db = database.getDb();
         const {
-            _id,
             meatPartId,
             label,
             totalMealCost,
@@ -94,29 +93,27 @@ recipesRoute.route("/recipe").put(async (request, response, next) => {
         }
 
         const mongoObject = {
-            _id,
-            meatPartId,
-            label,
-            totalMealCost,
-            caloriesPerServing,
-            ingredients: ingredients.map(item => ({
-                ingredient : item.ingredient,
-                quantity: item.quantity,
-                unit: item.unit,
-                pricePerUnit: item.pricePerUnit,
-                calories: item.calories,
-                cost: item.cost
-            }))
-
+            $set : {
+                meatPartId,
+                label,
+                totalMealCost,
+                caloriesPerServing,
+                ingredients: ingredients.map(item => ({
+                    ingredient : item.ingredient,
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    pricePerUnit: item.pricePerUnit,
+                    calories: item.calories,
+                    cost: item.cost
+                }))
+            }
         }
     
-        const data = await db.collection("recipes").insertOne(mongoObject);
+        const data = await db.collection("recipes").updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
         response.json(data)
     } catch(error) {
-        if (error.code === 11000) {
-            return response.status(409).json({ error: "A recipe with that _id already exists"});
-        }
-        next(error);
+        console.error("An expected error occurred", error);
+        return response.status(500).json({ error: "Something went wrong on the server"});
     }
 
 });
