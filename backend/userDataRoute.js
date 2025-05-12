@@ -85,7 +85,8 @@ useDataRoute.route("/userData").post( async(request, response) => {
         };
 
         const data = await db.collection("userData").insertOne(mongoObject);
-        response.status(201).json({
+        
+        return response.status(201).json({
             message: "User data created successfully",
             data: data
         });
@@ -95,13 +96,14 @@ useDataRoute.route("/userData").post( async(request, response) => {
             return response.status(409).json({ error: "A recipe with that _id already exists"});
         }
         
-        response.status(500).json({
+        return response.status(500).json({
             error: "Something went wrong",
             details: error.message
         });
     }
 });
 
+// #4 Update One
 useDataRoute.route("/userData/:id").put( async(request, response) => {
     try {
         const db = database.getDb();
@@ -119,17 +121,57 @@ useDataRoute.route("/userData/:id").put( async(request, response) => {
         } = request.body;
 
         const mongoObject = {
-            name,
-            email,
-            pin,
-            targetCaloriesPerDay,
-            mealsPerDay,
-            dietDuration,
-            budget,
-            role,
-            preference
+            $set : {
+                name,
+                email,
+                pin,
+                targetCaloriesPerDay,
+                mealsPerDay,
+                dietDuration,
+                budget,
+                role,
+                preference
+            }
         };
-    } catch {
+
+        const data = await db.collection("userData").updateOne({_id: request.params.id}, mongoObject);
         
+        if(data.matchCount === 0) {
+            return response.status(404).json({
+                error: "User not found"
+            });
+        }
+        
+        return response.status(201).json({
+            message: "User Data has been successfully updated",
+            data: data
+        })
+    } catch(error) {
+        console.error("Error updating user data:", error);
+        return response.status(500).json({
+            error: "Something went wrong on the server."
+        })
+    }
+});
+
+// #5 Delete One
+useDataRoute.route("/userData/:id").delete( async(request, response) => {
+    try {
+        const db = database.getDb();
+        const data = await db.collection("userData").deleteOne({ _id: request.params.id });
+
+        if (data.deletedCount === 0) {
+            return response.status(404).json({ error : "User not found"});
+        }
+
+        return response.status(200).json({
+            message: "User successfully deleted.",
+            data: data
+        });
+    } catch (error) {
+        console.error("An expected error occurred", error);
+        return response.status(500).json({
+            error: "Something went wrong"
+        });
     }
 });

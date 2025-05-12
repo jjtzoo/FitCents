@@ -66,7 +66,7 @@ recipesRoute.route("/recipes").post(async (request, response) => {
         }
     
         const data = await db.collection("recipes").updateOne(mongoObject);
-        response.status(201).json({
+        return response.status(201).json({
             message: "New Recipe added successfully",
             data: data
         })
@@ -75,7 +75,7 @@ recipesRoute.route("/recipes").post(async (request, response) => {
             return response.status(409).json({ error: "A recipe with that _id already exists"});
         }
         
-        response.status(500).json({
+        return response.status(500).json({
             error: "Something went wrong",
             details: error.message
         });
@@ -84,7 +84,6 @@ recipesRoute.route("/recipes").post(async (request, response) => {
 });
 
 // #4 Update One
-
 recipesRoute.route("/recipes/:id").put(async (request, response) => {
     try {
         const db = database.getDb();
@@ -113,8 +112,18 @@ recipesRoute.route("/recipes/:id").put(async (request, response) => {
             }
         }
     
-        const data = await db.collection("recipes").updateOne({_id: new ObjectId(request.params.id)}, mongoObject);
-        response.json(data)
+        const data = await db.collection("recipes").updateOne({_id: request.params.id}, mongoObject);
+
+        if(data.matchCount === 0) {
+            return response.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        return response.status(201).json({
+            message: "Recipe has been sucessfully updated",
+            data: data
+        })
     } catch(error) {
         console.error("An expected error occurred", error);
         return response.status(500).json({ error: "Something went wrong on the server"});
@@ -127,8 +136,16 @@ recipesRoute.route("/recipes/:id").put(async (request, response) => {
 recipesRoute.route("/recipes/:id").delete(async (request, response) => {
     try {
         const db = database.getDb();
-        const data = await db.collection("recipes").deleteOne({_id: new ObjectId(request.params.id)});
-        response.json(data)
+        const data = await db.collection("recipes").deleteOne({_id: request.params.id});
+
+        if (data.deletedCount === 0) {
+            return response.status(404).json({ error : "Recipe not found"});
+        }
+        
+        return response.status(200).json({
+            message: "Recipe successfully deleted",
+            data: data
+        });
     } catch(error) {
         console.error("An expected error occurred", error);
         return response.status(500).json({ error: "Something went wrong on the server"});
