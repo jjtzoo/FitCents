@@ -5,7 +5,7 @@ const { ObjectId } = require("mongodb")
 let recipesRoute = express.Router();
 
 // #1 Retrieve All
-// http://localhost:3000/recipes
+// http://localhost:3001/recipes
 recipesRoute.route("/recipes").get(async (request, response) => {
     let db = database.getDb();
     let data = await db.collection("recipes").find({}).toArray();
@@ -127,23 +127,6 @@ recipesRoute.route("/recipes/:id").delete(async (request, response) => {
             caloriesPerServing,
             ingredients
         } = request.body;
-
-        const mongoObject = {
-            $set : {
-                meatPartId,
-                label,
-                totalMealCost,
-                caloriesPerServing,
-                ingredients: ingredients.map(item => ({
-                    ingredient : item.ingredient,
-                    quantity: item.quantity,
-                    unit: item.unit,
-                    pricePerUnit: item.pricePerUnit,
-                    calories: item.calories,
-                    cost: item.cost
-                }))
-            }
-        }
     
         const data = await db.collection("recipes").deleteOne({_id: new ObjectId(request.params.id)}, mongoObject);
         response.json(data)
