@@ -21,8 +21,8 @@ recipesRoute.route("/recipes").get(async (request, response) => {
 // #2 Retrieve One 
 recipesRoute.route("/recipes/:id").get(async (request, response) => {
     let db = database.getDb();
-    let data = await db.collection("recipes").findOne({_id: new ObjectId(request.params.id)});
-    if (Object.keys(data).length > 0) {
+    let data = await db.collection("recipes").findOne({_id: request.params.id});
+    if (data) {
         return response.json(data);
     } else {
         throw new Error("Data was not found.");
@@ -31,7 +31,7 @@ recipesRoute.route("/recipes/:id").get(async (request, response) => {
 
 
 // #3 Create One
-recipesRoute.route("/recipes").post(async (request, response, next) => {
+recipesRoute.route("/recipes").post(async (request, response) => {
     try {
         const db = database.getDb();
 
@@ -65,13 +65,20 @@ recipesRoute.route("/recipes").post(async (request, response, next) => {
 
         }
     
-        const data = await db.collection("recipes").insertOne(mongoObject);
-        response.json(data)
+        const data = await db.collection("recipes").updateOne(mongoObject);
+        response.status(201).json({
+            message: "New Recipe added successfully",
+            data: data
+        })
     } catch(error) {
         if (error.code === 11000) {
             return response.status(409).json({ error: "A recipe with that _id already exists"});
         }
-        next(error);
+        
+        response.status(500).json({
+            error: "Something went wrong",
+            details: error.message
+        });
     }
 
 });
@@ -120,15 +127,7 @@ recipesRoute.route("/recipes/:id").put(async (request, response) => {
 recipesRoute.route("/recipes/:id").delete(async (request, response) => {
     try {
         const db = database.getDb();
-        const {
-            meatPartId,
-            label,
-            totalMealCost,
-            caloriesPerServing,
-            ingredients
-        } = request.body;
-    
-        const data = await db.collection("recipes").deleteOne({_id: new ObjectId(request.params.id)}, mongoObject);
+        const data = await db.collection("recipes").deleteOne({_id: new ObjectId(request.params.id)});
         response.json(data)
     } catch(error) {
         console.error("An expected error occurred", error);
