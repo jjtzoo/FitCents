@@ -5,10 +5,10 @@ const database = require("./connect")
 meatPartsRoute = express.Router()
 
 // #1 Retrieve All
-meatPartRoute.route("/meatParts").get( async(request, response) => {
+meatPartsRoute.route("/meatParts").get( async(request, response) => {
     try {
             const db = database.getDb();
-            const data = db.collection("meatParts").find({}).toArray();
+            const data = await db.collection("meatParts").find({}).toArray();
 
             if (data.length > 0) {
                 return response.status(200).json({
@@ -16,7 +16,7 @@ meatPartRoute.route("/meatParts").get( async(request, response) => {
                     data: data
                 })
             } else {
-                return response(400).json({
+                return response.status(400).json({
                     error: "No collection was found or is empty."
                 })
             }
@@ -27,10 +27,10 @@ meatPartRoute.route("/meatParts").get( async(request, response) => {
 
 
 // #2 Retrieve One
-meatPartRoute.route("/meatParts/:id").get( async(request, response) => {
+meatPartsRoute.route("/meatParts/:id").get( async(request, response) => {
     try {
         const db = database.getDb();
-        const data = db.collection("meatParts").findOne({ _id : request.params.id})
+        const data = await db.collection("meatParts").findOne({ _id : request.params.id})
         if (data) {
             return response.status(200).json({
                 message: "Meat Parts data has been retrieve.",
@@ -48,7 +48,7 @@ meatPartRoute.route("/meatParts/:id").get( async(request, response) => {
 });
 
 // #3 Create One
-meatPartRoute.route("/meatParts").post( async(request, response) => {
+meatPartsRoute.route("/meatParts").post( async(request, response) => {
     try {
         const db = database.getDb();
 
@@ -68,7 +68,7 @@ meatPartRoute.route("/meatParts").post( async(request, response) => {
             ...meatPartData
         }
 
-        const data = db.collection("meatParts").insertOne(newMeatPart);
+        const data = await db.collection("meatParts").insertOne(newMeatPart);
 
         if (data) {
             return response.status(200).json({
@@ -88,7 +88,7 @@ meatPartRoute.route("/meatParts").post( async(request, response) => {
 
 
 // #4 Update One
-meatPartRoute.route("/meatParts/:id").put( async(request, response) => {
+meatPartsRoute.route("/meatParts/:id").put( async(request, response) => {
     try {
         const db = database.getDb();
 
@@ -102,9 +102,9 @@ meatPartRoute.route("/meatParts/:id").put( async(request, response) => {
             }
         }
 
-        const data = db.collection("meatParts").updateOne({ _id: request.params.id}, updatedMeatPart);
+        const data = await db.collection("meatParts").updateOne({ _id: request.params.id}, updatedMeatPart);
 
-        if (data.matchCount === 0) {
+        if (data.matchedCount === 0) {
             return response.status(404).json({ error: "No matches found."})
         }
 
@@ -119,10 +119,10 @@ meatPartRoute.route("/meatParts/:id").put( async(request, response) => {
 });
 
 // #5 Delete One
-meatPartRoute.route("/meatParts/:id").delete( async(request, response) => {
+meatPartsRoute.route("/meatParts/:id").delete( async(request, response) => {
     try {
         const db = database.getDb();
-        const data = db.collection("meatParts").delete( {_id : request.params.id});
+        const data = await db.collection("meatParts").deleteOne( {_id : request.params.id});
 
         if (data.deletedCount === 0) {
             return response.status(404).json({error: "Meat-part _id is not found."})
@@ -138,4 +138,4 @@ meatPartRoute.route("/meatParts/:id").delete( async(request, response) => {
     }
 });
 
-module.exports = meatPartRoute;
+module.exports = meatPartsRoute;
