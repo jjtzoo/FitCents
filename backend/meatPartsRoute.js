@@ -137,3 +137,5 @@ meatPartRoute.route("/meatParts/:id").delete( async(request, response) => {
         return response.status(500).json({ error: "Internal Server Error."})
     }
 });
+
+module.exports = meatPartRoute;
