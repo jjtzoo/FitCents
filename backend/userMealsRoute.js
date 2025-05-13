@@ -139,3 +139,5 @@ userMealsRoute.route("/userMeals/:id").delete( async(request, response) => {
         })
     }
 });
+
+module.exports = userMealsRoute;
