@@ -122,7 +122,7 @@ userMealsRoute.route("/userMeals/:id").put(async (request, response) => {
 userMealsRoute.route("/userMeals/:id").delete( async(request, response) => {
     try{
         const db = database.getDb();
-        const data = db.collection("userMeals").delete({_id : request.params.id});
+        const data = db.collection("userMeals").deleteOne({_id : request.params.id});
 
         if (data.deletedCount === 0) {
             return response.status(404).json({ error: "Cannot find Mealplan with that _id."})

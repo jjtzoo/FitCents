@@ -144,7 +144,7 @@ userGoalsRoute.route("/userGoals/:id").put( async(request, response) => {
 userGoalsRoute.route("/userGoals/:id").delete( async(request, response) => {
     try {
         const db = database.getDb();
-        const data = await db.collection("userGoals").delete({_id : request.params.id});
+        const data = await db.collection("userGoals").deleteOne({_id : request.params.id});
 
         if (data.deletedCount === 0) {
             return response.status(404).json({error : "Goal not found"});
