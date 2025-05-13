@@ -3,11 +3,11 @@ const database = require("./connect")
 
 const { ObjectId } = require("mongodb");
 
-let useDataRoute = express.Router();
+let userDataRoute = express.Router();
 
 // #1 Retrieve All
 // http://localhost:3001/userData
-useDataRoute.route("/userData").get( async (request, response) => {
+userDataRoute.route("/userData").get( async (request, response) => {
     try {
         const db = database.getDb();
         let data = await db.collection("userData").find({}).toArray();
@@ -27,7 +27,7 @@ useDataRoute.route("/userData").get( async (request, response) => {
 });
 
 // #2 Get One
-useDataRoute.route("/userData/:id").get ( async(request, response) => {
+userDataRoute.route("/userData/:id").get ( async(request, response) => {
     try {
         let db = database.getDb();
         let data = await db.collection("userData").findOne({_id: request.params.id});
@@ -50,7 +50,7 @@ useDataRoute.route("/userData/:id").get ( async(request, response) => {
 });
 
 // #3 Create One
-useDataRoute.route("/userData").post( async(request, response) => {
+userDataRoute.route("/userData").post( async(request, response) => {
     try {
         const db = database.getDb();
 
@@ -104,7 +104,7 @@ useDataRoute.route("/userData").post( async(request, response) => {
 });
 
 // #4 Update One
-useDataRoute.route("/userData/:id").put( async(request, response) => {
+userDataRoute.route("/userData/:id").put( async(request, response) => {
     try {
         const db = database.getDb();
         
@@ -155,7 +155,7 @@ useDataRoute.route("/userData/:id").put( async(request, response) => {
 });
 
 // #5 Delete One
-useDataRoute.route("/userData/:id").delete( async(request, response) => {
+userDataRoute.route("/userData/:id").delete( async(request, response) => {
     try {
         const db = database.getDb();
         const data = await db.collection("userData").deleteOne({ _id: request.params.id });
@@ -175,3 +175,5 @@ useDataRoute.route("/userData/:id").delete( async(request, response) => {
         });
     }
 });
+
+module.exports = userDataRoute;
