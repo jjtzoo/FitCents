@@ -2,7 +2,6 @@ const express = require("express");
 const database = require("./connect");
 
 const { ObjectId } = require("mongodb");
-const userDataRoute = require("./userDataRoute");
 
 let userGoalsRoute = express.Router();
 
@@ -148,11 +147,11 @@ userGoalsRoute.route("/userGoals/:id").delete( async(request, response) => {
         const data = await db.collection("userGoals").delete({_id : request.params.id});
 
         if (data.deletedCount === 0) {
-            return response.status(404).json({error : "User not found"});
+            return response.status(404).json({error : "Goal not found"});
         };
 
         return response.status(200).json({
-            message: "User successfully deleted.",
+            message: "Goals successfully deleted.",
             data: data
         });
     } catch(error) {
