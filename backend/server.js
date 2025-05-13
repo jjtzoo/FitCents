@@ -5,7 +5,7 @@ const recipes = require("./recipesRoute");
 const userData = require("./recipesRoute");
 const userGoals = require("./userGoalsRoute");
 const userMeals = require("./userMealsRoute");
-const meatPart = require("./meatPartsRoute")
+const meatParts = require("./meatPartsRoute")
 
 const app = express();
 const PORT = 3001;
@@ -17,7 +17,7 @@ app.use(recipes);
 app.use(userData);
 app.use(userGoals);
 app.use(userMeals);
-app.use(meatPart);
+app.use(meatParts);
 
 app.listen(PORT, () => {
     connect.connectToServer();
