@@ -34,7 +34,7 @@ userGoalsRoute.route("/userGoals").get( async(request, response) => {
 userGoalsRoute.route("/userGoals/:id").get(async ( request, response) => {
     try {
         let db = database.getDb();
-        let data = await db.collection("/userGoals").findOne({_id: request.params.id})
+        let data = await db.collection("userGoals").findOne({_id: request.params.id})
         if (data) {
             return response.json(data);
         } else {
@@ -99,7 +99,7 @@ userGoalsRoute.route("/userGoals").post( async(request, response) => {
 });
 
 // #4 Update One
-userDataRoute.route("/userData/:id").put( async(request, response) => {
+userGoalsRoute.route("/userGoals/:id").put( async(request, response) => {
     try {
         const db = database.getDb();
 
@@ -121,7 +121,7 @@ userDataRoute.route("/userData/:id").put( async(request, response) => {
             }
         };
 
-        const data = await db.collection("userData").updateOne({_id: request.params.id}, updateGoals);
+        const data = await db.collection("userGoals").updateOne({_id: request.params.id}, updateGoals);
 
         if(data.matchCount === 0 ) {
             return response.status(404).json({
@@ -142,10 +142,10 @@ userDataRoute.route("/userData/:id").put( async(request, response) => {
 });
 
 // #5 delete one
-userDataRoute.route("/userData/:id").delete( async(request, response) => {
+userGoalsRoute.route("/userGoals/:id").delete( async(request, response) => {
     try {
         const db = database.getDb();
-        const data = await db.collection("userData").delete({_id : request.params.id});
+        const data = await db.collection("userGoals").delete({_id : request.params.id});
 
         if (data.deletedCount === 0) {
             return response.status(404).json({error : "User not found"});
