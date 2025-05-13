@@ -5,6 +5,7 @@ const database = require("./connect")
 meatPartsRoute = express.Router()
 
 // #1 Retrieve All
+// http://localhost:3001/meatParts
 meatPartsRoute.route("/meatParts").get( async(request, response) => {
     try {
             const db = database.getDb();
@@ -12,7 +13,7 @@ meatPartsRoute.route("/meatParts").get( async(request, response) => {
 
             if (data.length > 0) {
                 return response.status(200).json({
-                    message: "Meat-part collection has successfully been retrieve.",
+                    message: "Meat-part collection has been successfully retrieved.",
                     data: data
                 })
             } else {
@@ -72,7 +73,7 @@ meatPartsRoute.route("/meatParts").post( async(request, response) => {
 
         if (data) {
             return response.status(200).json({
-                message: "Meat-parts data has successfully been created.",
+                message: "Meat-parts data has been successfully created.",
                 data: data
             });
         } 
