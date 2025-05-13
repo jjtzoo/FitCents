@@ -27,7 +27,7 @@ userDataRoute.route("/userData").get( async (request, response) => {
 });
 
 // #2 Get One
-userDataRoute.route("/userData/:id").get ( async(request, response) => {
+userDataRoute.route("/userData/:id").get( async(request, response) => {
     try {
         let db = database.getDb();
         let data = await db.collection("userData").findOne({_id: request.params.id});
@@ -86,7 +86,7 @@ userDataRoute.route("/userData").post( async(request, response) => {
 
         const data = await db.collection("userData").insertOne(mongoObject);
         
-        return response.status(201).json({
+        return response.status(200).json({
             message: "User data created successfully",
             data: data
         });
@@ -142,7 +142,7 @@ userDataRoute.route("/userData/:id").put( async(request, response) => {
             });
         }
         
-        return response.status(201).json({
+        return response.status(200).json({
             message: "User Data has been successfully updated",
             data: data
         })
