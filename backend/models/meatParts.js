@@ -8,6 +8,6 @@ const meatPartsSchema = new mongoose.Schema({
     pricePerKilo: { type: Number, required: true}
 }, {
     _id: false,
-})
+});
 
 module.exports = mongoose.model('meatParts', meatPartsSchema, 'meatParts');
