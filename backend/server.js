@@ -18,7 +18,7 @@ connectDB();
 
 app.use(recipes);
 app.use("/userData", userData);
-app.use(userGoals);
+app.use("/userGoals", userGoals);
 app.use(userMeals);
 app.use(meatParts);
 
