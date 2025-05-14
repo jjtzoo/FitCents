@@ -10,17 +10,17 @@ router.get("/", async (req, res) => {
             return res.status(200).json({
             message: "All user records retrieved!",
             users: users
-            }) 
+            }); 
         } else {
             return res.status(404).json({
                 error: "No records found."
-            })
+            });
         }
     } catch (err) {
         console.log("Error: ", err);
         res.status(500).json({
             error: "Internal Server Error"
-        })
+        });
     }
 });
 // http://localhost:3001/userData
@@ -47,9 +47,8 @@ router.get("/:id", async(req, res) => {
     }
 })
 // #3 Create One 
-
 router.post("/", async(req, res) => {
-    try{
+    try {
         const newUser = new userData(req.body);
         const savedUser = await newUser.save();
         res.status(201).json({
@@ -57,7 +56,7 @@ router.post("/", async(req, res) => {
             newuser : savedUser
         });
     } catch (err) {
-        console.log("Error: ", error);
+        console.log("Error: ", err);
         return response.status(500).json({
             error: "Internal Server Error."
         })
@@ -82,7 +81,7 @@ router.put('/:id', async(req, res) => {
             error: "Internal Server Error."
         })
     }
-})
+});
 // #5 Delete One
 router.delete('/:id', async(req, res) => {
     try{
@@ -95,8 +94,8 @@ router.delete('/:id', async(req, res) => {
         res.status(200).json({
             message: "User successfully deleted."
         })
-    } catch {
-        console.log("Error: ", error);
+    } catch (err) {
+        console.log("Error: ", err);
         return response.status(500).json({
             error: "Internal Server Error."
         })
