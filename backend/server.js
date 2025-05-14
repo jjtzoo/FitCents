@@ -1,4 +1,4 @@
-const connect = require("./connect");
+const connectDB = require("./mongoose");
 const express = require("express");
 const cors = require("cors");
 const recipes = require("./recipesRoute");
@@ -20,7 +20,7 @@ app.use(userMeals);
 app.use(meatParts);
 
 app.listen(PORT, () => {
-    connect.connectToServer();
+    connectDB();
     console.log(`Server is running on port ${PORT}`);
 });
 
