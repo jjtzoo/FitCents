@@ -17,7 +17,7 @@ app.use(express.json());
 connectDB();
 
 app.use(recipes);
-app.use(userData);
+app.use("/userData", userData);
 app.use(userGoals);
 app.use(userMeals);
 app.use(meatParts);
