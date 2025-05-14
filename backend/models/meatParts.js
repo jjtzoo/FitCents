@@ -10,4 +10,4 @@ const meatPartsSchema = new mongoose.Schema({
     _id: false,
 });
 
-module.exports = mongoose.model('meatParts', meatPartsSchema, 'meatParts');
+module.exports = mongoose.model('MeatParts', meatPartsSchema, 'meatParts');

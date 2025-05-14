@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 
-const ingredientSubSchema = new mongoose.Schema ({
+const ingredientSubSchema = new mongoose.Schema({
     ingredient : {
         type: String,
-        ref: 'meatParts',
+        ref: 'MeatParts',
         required: true
     },
     label : {
@@ -22,7 +22,7 @@ const recipeSchema = new mongoose.Schema({
     _id: { type: String, required: true },
     meatPartId: { 
         type: String, 
-        ref: 'meatParts',
+        ref: 'MeatParts',
         required: true 
     },
     label : { type: String, required: true },
@@ -32,4 +32,4 @@ const recipeSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('recipes', recipeSchema, 'recipes');
+module.exports = mongoose.model('Recipes', recipeSchema, 'recipes');

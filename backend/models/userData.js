@@ -13,4 +13,4 @@ const userDataSchema = new mongoose.Schema({
     preference: { type: [String], default: []},
 }, {timestamps: true});
 
-module.exports = mongoose.model('userData', userDataSchema, 'userData');
+module.exports = mongoose.model('UserData', userDataSchema, 'userData');
