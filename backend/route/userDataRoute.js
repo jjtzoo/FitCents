@@ -1,179 +1,105 @@
 const express = require("express");
-const database = require("./connect")
-
-const { ObjectId } = require("mongodb");
-
-let userDataRoute = express.Router();
+const router = express.Router();
+const userData = require("../models/userData");
 
 // #1 Retrieve All
-// http://localhost:3001/userData
-userDataRoute.route("/userData").get( async (request, response) => {
+router.get("/", async (req, res) => {
     try {
-        const db = database.getDb();
-        let data = await db.collection("userData").find({}).toArray();
-        console.log("Retrieve Data", data);
-        if (data.length > 0) {
-            return response.json(data);
+        const users = await userData.find()
+        if(users.length > 0) {
+            return res.status(200).json({
+            message: "All user records retrieved!",
+            users: users
+            }) 
         } else {
-            return response.status(404).json({
-                error: "No data found",
-                message: "No records found in the database."
+            return res.status(404).json({
+                error: "No records found."
             })
         }
-    } catch (error) {
-        console.log("Error: ", error)
-        return response.status(500).json({ error: "Something went wrong on the server"});
+    } catch (err) {
+        console.log("Error: ", err);
+        res.status(500).json({
+            error: "Internal Server Error"
+        })
     }
 });
-
-// #2 Get One
-userDataRoute.route("/userData/:id").get( async(request, response) => {
+// http://localhost:3001/userData
+// #2 Retrieve One
+router.get("/:id", async(req, res) => {
     try {
-        let db = database.getDb();
-        let data = await db.collection("userData").findOne({_id: request.params.id});
-        if (data) {
-            return response.json(data);
-        } else {
-            return response.status(404).json({
-                error: "User not found",
-                message: "The user with the given ID was not found in the database."
+        const user = await userData.findById(req.params.id)
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
             })
         }
-    } catch (error) {
+
+        res.status(200).json({
+            message: "User retrieved successfully",
+            user: user
+        })
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: "Internal Server Error."
+        })
+    }
+})
+// #3 Create One 
+
+router.post("/", async(req, res) => {
+    try{
+        const newUser = new userData(req.body);
+        const savedUser = await newUser.save();
+        res.status(201).json({
+            message: "New user successfully created.",
+            newuser : savedUser
+        });
+    } catch (err) {
         console.log("Error: ", error);
         return response.status(500).json({
-            error: "Internal Server Error",
-            message: "Something went wrong. Please try again later."
+            error: "Internal Server Error."
         })
     }
-
 });
-
-// #3 Create One
-userDataRoute.route("/userData").post( async(request, response) => {
-    try {
-        const db = database.getDb();
-
-        const {
-            _id,
-            name,
-            email,
-            pin,
-            targetCaloriesPerDay,
-            mealsPerDay,
-            dietDuration,
-            budget,
-            role,
-            preference
-        } = request.body;
-
-        if (!_id) {
-            return response.status(400).json({ error: "_id required"});
-        };
-
-        const mongoObject = {
-            _id,
-            name,
-            email,
-            pin,
-            targetCaloriesPerDay,
-            mealsPerDay,
-            dietDuration,
-            budget,
-            role,
-            preference
-        };
-
-        const data = await db.collection("userData").insertOne(mongoObject);
-        
-        return response.status(200).json({
-            message: "User data created successfully",
-            data: data
-        });
-
-    } catch (error) {
-        if (error.code === 11000) {
-            return response.status(409).json({ error: "A recipe with that _id already exists"});
-        }
-        
-        return response.status(500).json({
-            error: "Something went wrong",
-            details: error.message
-        });
-    }
-});
-
 // #4 Update One
-userDataRoute.route("/userData/:id").put( async(request, response) => {
+router.put('/:id', async(req, res) => {
     try {
-        const db = database.getDb();
-        
-        const {
-            name,
-            email,
-            pin,
-            targetCaloriesPerDay,
-            mealsPerDay,
-            dietDuration,
-            budget,
-            role,
-            preference
-        } = request.body;
-
-        const mongoObject = {
-            $set : {
-                name,
-                email,
-                pin,
-                targetCaloriesPerDay,
-                mealsPerDay,
-                dietDuration,
-                budget,
-                role,
-                preference
-            }
-        };
-
-        const data = await db.collection("userData").updateOne({_id: request.params.id}, mongoObject);
-        
-        if(data.matchCount === 0) {
-            return response.status(404).json({
-                error: "User not found"
-            });
+        const updateUser = await userData.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if (!updateUser) {
+            return res.status(404).json({
+                error: "User not found."
+            })
         }
-        
-        return response.status(200).json({
-            message: "User Data has been successfully updated",
-            data: data
+        return res.status(200).json({
+            message: "User update successful",
+            updatedUser : updateUser
         })
-    } catch(error) {
-        console.error("Error updating user data:", error);
+    } catch (err) {
+        console.log("Error: ", error);
         return response.status(500).json({
-            error: "Something went wrong on the server."
+            error: "Internal Server Error."
         })
     }
-});
-
+})
 // #5 Delete One
-userDataRoute.route("/userData/:id").delete( async(request, response) => {
-    try {
-        const db = database.getDb();
-        const data = await db.collection("userData").deleteOne({ _id: request.params.id });
-
-        if (data.deletedCount === 0) {
-            return response.status(404).json({ error : "User not found"});
+router.delete('/:id', async(req, res) => {
+    try{
+        const deleteUser = await userData.findByIdAndDelete(req.params.id);
+        if (!deleteUser) {
+            return res.status(404).json({
+                error: "User not found."
+            })
         }
-
-        return response.status(200).json({
-            message: "User successfully deleted.",
-            data: data
-        });
-    } catch (error) {
-        console.error("An expected error occurred", error);
+        res.status(200).json({
+            message: "User successfully deleted."
+        })
+    } catch {
+        console.log("Error: ", error);
         return response.status(500).json({
-            error: "Something went wrong"
-        });
+            error: "Internal Server Error."
+        })
     }
-});
-
-module.exports = userDataRoute;
+})
+module.exports = router;
