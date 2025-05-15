@@ -1,6 +1,5 @@
 const express = require("express");
 const recipes = require("../models/recipe");
-const { route } = require("./recipesRoute");
 
 
 let router = express.Router();
@@ -51,7 +50,7 @@ route.get('/:id', async (req, res) => {
 });
 
 // createone
-route.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const newRecipe = new recipes(req.body);
         const savedRecipe = await newRecipe.save();
@@ -69,12 +68,16 @@ route.post('/', async (req, res) => {
 });
 
 // updateone
-route.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const updateRecipe = await recipes.findByIdAndUpdate(req.params.id, req.body, {new : true});
         if (!updateRecipe) {
             return res.status(404).json({error: "No recipe found."})
         }
+        return res.status(200).json({
+            message: "User update successful",
+            recipe : updateRecipe
+        })
     } catch(err) {
         console.log("Error:", err);
         return res.status(500).json({
@@ -87,7 +90,7 @@ route.put('/:id', async (req, res) => {
 router.delete("/:d", async(req, res) => {
     try {
         const deleteRecipe = await recipes.findByIdAndDelete(req.params.id);
-         if (!deleteUser) {
+        if (!deleteRecipe) {
             return res.status(404).json({
                 error: "Recipe not found."
             })

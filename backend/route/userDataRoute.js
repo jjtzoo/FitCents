@@ -1,10 +1,12 @@
-const router = express.Router();
+const express = require('express')
 const userData = require("../models/userData");
 
+
+let router = express.Router();
 // #1 Retrieve All
 router.get("/", async (req, res) => {
     try {
-        const users = await userData.find()
+        const users = await userData.find();
         if(users.length > 0) {
             return res.status(200).json({
             message: "All user records retrieved!",
@@ -99,5 +101,5 @@ router.delete('/:id', async(req, res) => {
             error: "Internal Server Error."
         })
     }
-})
+});
 module.exports = router;

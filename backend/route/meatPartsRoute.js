@@ -1,142 +1,109 @@
 const express = require("express")
+const meatParts = require("../models/meatParts")
 
-const database = require("./connect")
-
-meatPartsRoute = express.Router()
+router = express.Router()
 
 // #1 Retrieve All
 // http://localhost:3001/meatParts
-meatPartsRoute.route("/meatParts").get( async(request, response) => {
-    try {
-            const db = database.getDb();
-            const data = await db.collection("meatParts").find({}).toArray();
-
-            if (data.length > 0) {
-                return response.status(200).json({
-                    message: "Meat-part collection has been successfully retrieved.",
-                    data: data
-                })
-            } else {
-                return response.status(400).json({
-                    error: "No collection was found or is empty."
-                })
-            }
-    } catch(err) {
-        return response.status(500).json({ error: "Internal Server Error."})
-    }
-});
-
-
-// #2 Retrieve One
-meatPartsRoute.route("/meatParts/:id").get( async(request, response) => {
-    try {
-        const db = database.getDb();
-        const data = await db.collection("meatParts").findOne({ _id : request.params.id})
-        if (data) {
-            return response.status(200).json({
-                message: "Meat Parts data has been retrieve.",
+router.get("/", async(req, res) => {
+    try{
+        const data = meatParts.find();
+        if(data.length > 0) {
+            return res.status(200).json({
+                message: 'All recipes record retrieve!',
                 data: data
             });
         } else {
-            return response.status(404).json({
-                error: "No data was found."
+            return res.status(404).json({
+                error: "No records found."
             });
         }
-
-    } catch(err) {
-        return response.status(500).json({ error: "Internal Server Error."})
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
     }
 });
 
-// #3 Create One
-meatPartsRoute.route("/meatParts").post( async(request, response) => {
-    try {
-        const db = database.getDb();
+// Retrieve One
+router.get("/:id", async(req, res) => {
+    try{
+        const data = meatParts.findById(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                error: "No records found."
+            });
+        }
 
-        const {
-            _id,
-            ...meatPartData
-        } = request.body
+        return res.status(200).json({
+            message: "Recipe retrieved successfully!",
+            data : data
+        })
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
+    }
+});
 
-        if (!_id) {
-            return response.status(400).json({
-                error: "_id is required."
+// Create One
+router.get("/:id", async(req, res) => {
+    try{
+        const data = new meatParts(req.body);
+        const savedData = await data.save();
+
+        res.status(201).json({
+            message: "New user successfully created.",
+            data : savedData
+        });
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
+    }
+});
+
+// Update One
+router.get("/:id", async(req, res) => {
+    try{
+        const data = await meatParts.findByIdAndUpdate(req.params.id, req.body, {new : true} );
+        if (!data) {
+            return res.status(404).json({error: 'No Meat-part found.'});
+        }
+        return res.status(200).json({
+            message: "User update successful",
+            data: data
+        });
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
+    }
+});
+
+// Delete One
+router.get("/", async(req, res) => {
+    try{
+        const data = await meatParts.findByIdAndUpdate(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                error: "Recipe not found."
             })
         }
-
-        const newMeatPart = {
-            _id,
-            ...meatPartData
-        }
-
-        const data = await db.collection("meatParts").insertOne(newMeatPart);
-
-        if (data) {
-            return response.status(200).json({
-                message: "Meat-parts data has been successfully created.",
-                data: data
-            });
-        } 
-    } catch(err) {
-        if(err.code === 1100) {
-            return response.status(409).json({
-                error: "Meat-part already exist."
-            });
-        }
-        return response.status(500).json({ error: "Internal Server Error."})
-    }
-});
-
-
-// #4 Update One
-meatPartsRoute.route("/meatParts/:id").put( async(request, response) => {
-    try {
-        const db = database.getDb();
-
-        const {
-            ...meatPartData
-        } = request.body
-
-        const updatedMeatPart = {
-            $set : {
-                ...meatPartData
-            }
-        }
-
-        const data = await db.collection("meatParts").updateOne({ _id: request.params.id}, updatedMeatPart);
-
-        if (data.matchedCount === 0) {
-            return response.status(404).json({ error: "No matches found."})
-        }
-
-        return response.status(200).json({
-            message: "Meat-part data has successfully been updated",
+        res.status(200).json({
+            message: "Recipe successfully deleted.",
             data: data
         })
-    } catch(err) {
-        console.error("Error: ", err);
-        return response.status(500).json({ error: "Internal Server Error."});
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
     }
 });
 
-// #5 Delete One
-meatPartsRoute.route("/meatParts/:id").delete( async(request, response) => {
-    try {
-        const db = database.getDb();
-        const data = await db.collection("meatParts").deleteOne( {_id : request.params.id});
-
-        if (data.deletedCount === 0) {
-            return response.status(404).json({error: "Meat-part _id is not found."})
-        }
-
-        return response.status(200).json({
-            message: "Meat-part data has successfully been deleted.",
-            data: data
-        }) 
-    } catch(err) {
-        console.error("Error: ", err);
-        return response.status(500).json({ error: "Internal Server Error."})
-    }
-});
-
-module.exports = meatPartsRoute;
+module.exports = router;
