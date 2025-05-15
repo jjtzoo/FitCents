@@ -7,10 +7,10 @@ router = express.Router()
 // http://localhost:3001/meatParts
 router.get("/", async(req, res) => {
     try{
-        const data = meatParts.find();
+        const data = await meatParts.find();
         if(data.length > 0) {
             return res.status(200).json({
-                message: 'All recipes record retrieve!',
+                message: 'All meat parts record retrieve!',
                 data: data
             });
         } else {
@@ -29,13 +29,12 @@ router.get("/", async(req, res) => {
 // Retrieve One
 router.get("/:id", async(req, res) => {
     try{
-        const data = meatParts.findById(req.params.id);
+        const data = await meatParts.findById(req.params.id);
         if (!data) {
             return res.status(404).json({
                 error: "No records found."
             });
         }
-
         return res.status(200).json({
             message: "Recipe retrieved successfully!",
             data : data
@@ -49,7 +48,7 @@ router.get("/:id", async(req, res) => {
 });
 
 // Create One
-router.get("/:id", async(req, res) => {
+router.post("/", async(req, res) => {
     try{
         const data = new meatParts(req.body);
         const savedData = await data.save();
@@ -67,7 +66,7 @@ router.get("/:id", async(req, res) => {
 });
 
 // Update One
-router.get("/:id", async(req, res) => {
+router.put("/:id", async(req, res) => {
     try{
         const data = await meatParts.findByIdAndUpdate(req.params.id, req.body, {new : true} );
         if (!data) {
@@ -86,7 +85,7 @@ router.get("/:id", async(req, res) => {
 });
 
 // Delete One
-router.get("/", async(req, res) => {
+router.delete("/:id", async(req, res) => {
     try{
         const data = await meatParts.findByIdAndUpdate(req.params.id);
         if (!data) {

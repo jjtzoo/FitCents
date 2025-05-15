@@ -1,143 +1,109 @@
 const express = require("express");
-const database = require("./connect");
+const UserMeals = require("../models/userMeals");
 
-let userMealsRoute = express.Router();
+let router = express.Router();
 
 // #1 Retrieve All
 // http://localhost:3001/userMeals
-userMealsRoute.route("/userMeals").get( async(request, response) => {
-    try {
-        const db = database.getDb();
-        const data = await db.collection("userMeals").find({}).toArray();
-
-        if (data.length > 0) {
-            return response.status(200).json({
-            message: "User Meals Retrieve",
-            details: data
-            })
+router.get("/", async(req, res) => {
+    try{
+        const data = UserMeals.find();
+        if(data.length > 0) {
+            return res.status(200).json({
+                message: 'All recipes record retrieve!',
+                data: data
+            });
         } else {
-            return response.status(404).json({
-                error: "No Data Found"
-            })
+            return res.status(404).json({
+                error: "No records found."
+            });
         }
-    } catch (error) {
-        console.log("Error: ", error);
-        return response.status(500).json({
-            error: "Server Error."
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
         })
     }
 });
 
-// #2 Get One
-userMealsRoute.route("/userMeals/:id").get( async(request, response) => {
-    try {
-        const db = database.getDb();
-        const data = await db.collection("userMeals").findOne({ _id: request.params.id})
-
-        if (data) {
-            return response.status(200).json({
-                message: "Meal successfully retrieve!",
-                detail: data
-            })
-        } else {
-            return response.status(404).json({ error: "Can't find meal _id"});
+// #2 Retrieve One
+router.get("/:id", async(req, res) => {
+    try{
+        const data = UserMeals.findById(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                error: "No records found."
+            });
         }
-    } catch (error) {
-        console.log("Error: ", error);
-        return response.status(500).json({ error: "Internal Server Error."})
-    }
-});
-
-// #3 CreateOne 
-userMealsRoute.route("/userMeals").post( async(request, response) => {
-    try {
-        const db = database.getDb();
-
-        const { _id, ...mealData} = request.body;
-        if (!_id) {
-            return response.status(400).json({
-                error: "_id is required"
-            })
-        }
-
-        const newMealPlan = {
-            _id,
-            ...mealData
-        };
-
-        const data = db.collection("userMeals").insertOne(newMealPlan);
-
-        return response.status(200).json({
-            message: "Successfully added new MealPlan",
-            data: data
+        return res.status(200).json({
+            message: "Recipe retrieved successfully!",
+            data : data
         })
-    } catch (error) {
-        if (error.code === 11000) {
-            return response.status(409).json({ error: "User meal plan has already been generated."});
-        }
-
-        return response.status(500).json({
-            error: "Server Error",
-            details: error.message
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
         })
     }
 });
+
+// #3 CreateOne
+router.post("/", async(req, res) => {
+    try{
+        const data = new UserMeals(req.body);
+        const savedData = await data.save();
+
+        res.status(201).json({
+            message: "New user successfully created.",
+            data : savedData
+        });
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
+    }
+});
+
 
 // #4 Update One
-userMealsRoute.route("/userMeals/:id").put(async (request, response) => {
-    try {
-        const db = database.getDb();
-
-        const {
-            mealsBody
-        } = request.body
-
-        const updatedMeal  = {
-            $set : {
-                mealsBody
-            }
-        }
-
-
-        const data = db.collection("userMeals").updateOne({_id : request.params.id}, updatedMeal);
-
-        if(data.matchCount === 0) {
-            return response.status(404).json({ error: "No matches were found"});
-
-        }
-
-        return response.status(200).json({
-            message: "Mealplan has successfully been updated",
-            data: data
-        })
-
-    } catch (error) {
-        console.log("Error: ", error)
-        return response.status(500).json({ error: "Internal Server Error."});
-    }
-});
-
-
-// #5 delete One
-userMealsRoute.route("/userMeals/:id").delete( async(request, response) => {
+router.put("/:id", async(req, res) => {
     try{
-        const db = database.getDb();
-        const data = db.collection("userMeals").deleteOne({_id : request.params.id});
-
-        if (data.deletedCount === 0) {
-            return response.status(404).json({ error: "Cannot find Mealplan with that _id."})
+        const data = await UserMeals.findByIdAndUpdate(req.params.id, req.body, {new : true} );
+        if (!data) {
+            return res.status(404).json({error: 'No Meat-part found.'});
         }
-
-        return response.status(200).json({
-            message: "Mealplan has successfully been deleted.",
+        return res.status(200).json({
+            message: "User update successful",
             data: data
         });
-    } catch (error) {
-        console.error("Error: ", error);
-        return response.status(500).json({
-            error: "Internal Server Error."
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
         })
     }
 });
 
-module.exports = userMealsRoute;
+// #5 Delete One
+router.delete("/:id", async(req, res) => {
+    try{
+        const data = await meatParts.findByIdAndUpdate(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                error: "Recipe not found."
+            })
+        }
+        res.status(200).json({
+            message: "Recipe successfully deleted.",
+            data: data
+        })
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: 'Internal Server Error.'
+        })
+    }
+});
+
+module.exports = router;
