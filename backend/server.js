@@ -16,11 +16,11 @@ app.use(express.json());
 
 connectDB();
 
-app.use(recipes);
+app.use("/recipes",recipes);
 app.use("/userData", userData);
 app.use("/userGoals", userGoals);
-app.use(userMeals);
-app.use(meatParts);
+app.use("/userMeals", userMeals);
+app.use("/meatParts", meatParts);
 
 app.listen(PORT, () => {
     connectDB();

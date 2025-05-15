@@ -45,7 +45,7 @@ router.get("/:id", async(req, res) => {
         console.log("Error: ", err);
         return res.status(500).json({
             error: "Internal Server Error."
-        })
+        });
     }
 });
 

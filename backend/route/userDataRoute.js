@@ -59,7 +59,7 @@ router.post("/", async(req, res) => {
         console.log("Error: ", err);
         return response.status(500).json({
             error: "Internal Server Error."
-        })
+        });
     }
 });
 // #4 Update One
