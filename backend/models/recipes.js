@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const ingredientSubSchema = new mongoose.Schema({
     ingredient : {
         type: String,
-        ref: 'MeatParts',
         required: true
     },
     label : {

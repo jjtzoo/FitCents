@@ -2,10 +2,13 @@ const Recipes = require("../models/recipes");
 
 exports.getAllRecipe = async(req, res) => {
     try {
-        const recipes = await Recipes.find();
+        const recipes = await Recipes.find().populate({
+            path: "meatPartId",
+            select: "name meatCategoryId"
+        })
         if (recipes.length > 0) {
             return res.status(200).json({
-                message: 'All Recipes record retrieve!',
+                message: 'All recipes retrieve!',
                 recipes
             });
         } else {
@@ -24,10 +27,12 @@ exports.getAllRecipe = async(req, res) => {
 
 exports.getOneRecipe = async(req, res) => {
     try {
-        const recipe = await Recipes.findById(req.params.id);
+        const recipe = await Recipes.findById(req.params.id)
+            .populate({ path: "meatPartId", select: "name meatCategoryId"});
+
         if (!recipe) {
             return res.status(404).json({
-                error: "No records found."
+                error: "Recipe not found."
             });
         }
 
@@ -48,7 +53,7 @@ exports.createRecipe = async(req, res) => {
         const newRecipe = new Recipes(req.body);
         const savedRecipe = await newRecipe.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "New recipe successfully created.",
             savedRecipe
         });
@@ -62,10 +67,12 @@ exports.createRecipe = async(req, res) => {
 
 exports.updateRecipe = async(req, res) => {
     try {
-        const updateRecipe = await Recipes.findByIdAndUpdate(req.params.id, req.body, {new : true});
+        const updateRecipe = await Recipes.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators: true});
+        
         if (!updateRecipe) {
             return res.status(404).json({error: "No recipe found."});
         }
+        
         return res.status(200).json({
             message: "Recipe updated successfully.",
             updateRecipe
@@ -80,7 +87,7 @@ exports.updateRecipe = async(req, res) => {
 
 exports.deleteRecipe = async(req, res) => {
     try {
-        const deleteRecipe = await recipes.findByIdAndDelete(req.params.id);
+        const deleteRecipe = await Recipes.findByIdAndDelete(req.params.id);
         if (!deleteRecipe) {
             return res.status(404).json({
                 error: "Recipe not found."
@@ -91,7 +98,7 @@ exports.deleteRecipe = async(req, res) => {
         });
     } catch(err) {
         console.log("Error: ", err);
-        return response.status(500).json({
+        return res.status(500).json({
             error: "Internal Server Error."
         });
     }
