@@ -1,17 +1,17 @@
 const express = require("express");
-const userGoals = require("../models/userGoals");
+const UserGoals = require("../models/userGoals");
 
 let router = express.Router();
 
-// http://localhost:3001/userGoals
+// http://localhost:3001/UserGoals
 // #1 Retrieve All
 router.get("/", async (req, res) => {
     try {
-        const goals = await userGoals.find();
+        const goals = await UserGoals.find();
         if(goals.length > 0) {
             return res.status(200).json({
-            message: "All user goals retrieved!",
-            users: goals
+            message: "All users' goals retrieved!",
+            goals
             }); 
         } else {
             return res.status(404).json({
@@ -29,17 +29,17 @@ router.get("/", async (req, res) => {
 // #2 Retrieve One
 router.get("/:id", async(req, res) => {
     try {
-        const goals = await userGoals.findById(req.params.id)
+        const goal = await UserGoals.findById(req.params.id)
 
-        if (!goals) {
+        if (!goal) {
             return res.status(404).json({
-                error: "User not found"
+                error: "User's goals not found"
             })
         }
 
         res.status(200).json({
-            message: "User retrieved successfully",
-            goal: goals
+            message: "User's goals retrieved successfully",
+            goal
         })
     } catch (err) {
         console.log("Error: ", err);
@@ -52,13 +52,16 @@ router.get("/:id", async(req, res) => {
 // #3 Create One
 router.post("/", async(req, res) => {
     try {
-        const newUser = new userGoals(req.body);
-        const savedUser = await newUser.save();
+        const newGoals = new UserGoals(req.body);
+        const savedGoals = await newGoals.save();
         res.status(201).json({
             message: "New user successfully created.",
-            newuser : savedUser
+            savedGoals
         });
     } catch (err) {
+        if(err.name === "ValidationError" || err.code === 11000) {
+            return res.status(400).json({error: err.message})
+        }
         console.log("Error: ", err);
         return response.status(500).json({
             error: "Internal Server Error."
@@ -69,38 +72,45 @@ router.post("/", async(req, res) => {
 // #4 Update One
 router.put("/:d", async(req, res) => {
     try {
-        const updateGoals = await userGoals.findByIdAndUpdate(req.params.id);
+        const updateGoals = await UserGoals.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
         if (!updateGoals) {
             return res.status(404).json({
-                error: "User goals not found."
+                error: "User's goals not found."
             })
         };
         return res.status(200).json({
-            message: "User goals successfully updated.",
+            message: "User's goals successfully updated.",
             updatedGoals: updateGoals
         })
 
-    } catch{
-
+    } catch (err) {
+        console.error("Error updating goal: ", err);
+        if (err.name === "CastError" || err.name === "ValidationError") {
+            return res.status(400).json({ error: err.message });
+        }
+        return res.status(500).json({error: "Internal Server Error."})
     }
 });
 
 // #5 Delete One
 router.delete('/:d', async(req, res) => {
     try {
-        const deleteUser = await userGoals.deleteOne(req.params.id);
+        const deleteUser = await UserGoals.findByIdAndDelete(req.params.id);
 
         if (!deleteUser) {
             return response.status(404).json({
-                error: "User not found."
+                error: "User's goals not found."
             })
         }
 
         return response.status(200).json({
-            message: "User successfully deleted."
+            message: "User's goals successfully deleted."
         })
     } catch (err) {
         console.log("Error: ", err);
+        if (err.name === "CastError") {
+            return res.status(400).json({ error: "Invalid goal ID format" });
+        }
         return res.status(500).json({
             error: "Internal Server Error."
         })
