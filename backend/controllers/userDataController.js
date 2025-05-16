@@ -1,6 +1,49 @@
 const UserData = require("../models/userData");
 const UserGoals = require("../models/userGoals");
 
+exports.getAllUser = async (req, res) => {
+    try {
+        const users = await userData.find();
+        if(users.length > 0) {
+            return res.status(200).json({
+                message: "All user records retrieved!",
+                users: users
+            }); 
+        } else {
+            return res.status(404).json({
+                error: "No records found."
+            });
+        }
+    } catch (err) {
+        console.log("Error: ", err);
+        res.status(500).json({
+            error: "Internal Server Error"
+        });
+    }
+};
+
+exports.getOneUser = async(req, res) => {
+    try {
+        const user = await userData.findById(req.params.id)
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "User retrieved successfully",
+            user
+        });
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+            error: "Internal Server Error."
+        })
+    }
+}
+
 exports.createUser = async (req, res) => {
     try {
         const newUser = new UserData(req.body);
@@ -32,7 +75,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const updatedUser = await UserData.findByIdAndUpdate(req.params.id)
+        const updatedUser = await UserData.findByIdAndUpdate(req.params.id, req.body, { new: true});
         if (!updatedUser) {
             return res.status(404).json({ error: "User not found"});
         }
@@ -57,6 +100,22 @@ exports.updateUser = async (req, res) => {
             goals: updatedGoals
         });
     } catch (err) {
+        console.log("Update Error: ", err);
+        res.status(500).json({ error: "Internal Server Error."});
+    }
+};
 
+exports.deleteUser = async (req, res) => {
+    try {
+        const deletedUser = await UserData.findOneAndDelete({ _id: req.params.id});
+
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found"});
+        }
+
+        await UserGoals.deleteOne({ user: deletedUser._id});
+    } catch (err) {
+        console.log("Delete Error: ", err);
+        return res.status(500).json({ error: "Internal Server Error."})
     }
 };
