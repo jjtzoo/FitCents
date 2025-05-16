@@ -12,7 +12,7 @@ router.get('/', async(req, res) => {
         if (recipes.length > 0) {
             return res.status(200).json({
                 message: 'All recipes record retrieve!',
-                recipes: recipes
+                recipes
             });
         } else {
             return res.status(404).json({
@@ -28,7 +28,7 @@ router.get('/', async(req, res) => {
 });
 
 // get one 
-route.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const recipe = await recipes.findById(req.params.id);
         if (!recipe) {
@@ -39,7 +39,7 @@ route.get('/:id', async (req, res) => {
 
         return res.status(200).json({
             message: "Recipe retrieved successfully!",
-            recipes : recipe
+            recipe
         })
     } catch(err) {
         console.log("Error:", err);
@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
 
         res.status(201).json({
             message: "New user successfully created.",
-            newrecipe : savedRecipe
+            savedRecipe
         });
     } catch(err) {
         console.log("Error:", err);
@@ -76,7 +76,7 @@ router.put('/:id', async (req, res) => {
         }
         return res.status(200).json({
             message: "User update successful",
-            recipe : updateRecipe
+            updateRecipe
         })
     } catch(err) {
         console.log("Error:", err);
