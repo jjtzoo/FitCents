@@ -38,7 +38,7 @@ router.get("/:id", async(req, res) => {
 
         res.status(200).json({
             message: "User retrieved successfully",
-            user: user
+            user
         })
     } catch (err) {
         console.log("Error: ", err);
@@ -54,7 +54,7 @@ router.post("/", async(req, res) => {
         const savedUser = await newUser.save();
         res.status(201).json({
             message: "New user successfully created.",
-            newuser : savedUser
+            savedUser
         });
     } catch (err) {
         console.log("Error: ", err);
@@ -74,7 +74,7 @@ router.put('/:id', async(req, res) => {
         }
         return res.status(200).json({
             message: "User update successful",
-            updatedUser : updateUser
+            updateUser
         })
     } catch (err) {
         console.log("Error: ", error);
