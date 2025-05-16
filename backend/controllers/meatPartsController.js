@@ -6,7 +6,7 @@ exports.getAllMeatPart = async(req, res) => {
         if(data.length > 0) {
             return res.status(200).json({
                 message: 'All meat parts record retrieve!',
-                data: data
+                data
             });
         } else {
             return res.status(404).json({
@@ -17,7 +17,7 @@ exports.getAllMeatPart = async(req, res) => {
         console.log("Error: ", err);
         return res.status(500).json({
             error: 'Internal Server Error.'
-        })
+        });
     }
 }
 
@@ -31,7 +31,7 @@ exports.getMeatPart = async(req, res) => {
         }
         return res.status(200).json({
             message: "Recipe retrieved successfully!",
-            data : data
+            data
         });
     } catch (err) {
         console.log("Error: ", err);
@@ -66,7 +66,7 @@ exports.updateMeatParts = async(req, res) => {
         }
         return res.status(200).json({
             message: "User update successful",
-            data: data
+            data
         });
     } catch (err) {
         console.log("Error: ", err);
@@ -86,7 +86,7 @@ exports.deleteMeatPart = async(req, res) => {
         }
         res.status(200).json({
             message: "Recipe successfully deleted.",
-            data: data
+            data
         });
     } catch (err) {
         console.log("Error: ", err);
