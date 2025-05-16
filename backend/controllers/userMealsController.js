@@ -5,7 +5,7 @@ const Recipes = require("../models/recipes")
 
 exports.getUserMeals = async(req, res) => {
     try{
-        const data = UserMeals.find();
+        const data = await UserMeals.find();
         if(data.length > 0) {
             return res.status(200).json({
                 message: 'All recipes record retrieve!',
@@ -26,7 +26,7 @@ exports.getUserMeals = async(req, res) => {
 
 exports.getMeal = async(req, res) => {
     try{
-        const data = UserMeals.findById(req.params.id);
+        const data = await UserMeals.findById(req.params.id);
         if (!data) {
             return res.status(404).json({
                 error: "No records found."
@@ -46,21 +46,36 @@ exports.getMeal = async(req, res) => {
 
 exports.generateUserMeals = async(req, res) => {
     try {
-        const userId = req.params.id;
+        console.log("Request body:", req.body);
+        const userId = req.body.userId;
 
         const user = await UserData.findById(userId);
-        const goals = await UserGoals.findOne({ user: userId});
-
+        console.log("User found: ", user)
+        const goals = await UserGoals.findOne({ user: userId });
+        console.log("Goals found: ", goals)
         if (!user || !goals) {
             return res.status(404).json({ error: "User or goals not found."})
         }
 
-        const recipes = await Recipes.find({
-            calories: {$lte : goals.kcalPerMeal},
-            cost : {$lte : goals.costPerMeal},
-            tags: {$in: user.preference}
-        })
+        const minCalories = goals.kcalPerMeal * .87;
+        const maxCalories = goals.kcalPerMeal * 1.13;
 
+        const minCost = goals.costPerMeal * .85;
+        const maxCost = goals.costPerMeal * 1.15;
+
+        console.log("Calories range:", minCalories, maxCalories);
+        console.log("Cost range:", minCost, maxCost);
+
+        const allRecipes = await Recipes.find();
+        console.log("Total recipes in DB:", allRecipes.length);
+        console.log("First recipe sample:", allRecipes[0]);
+
+        const recipes = await Recipes.find({
+            caloriesPerServing: { $gte : minCalories, $lte : maxCalories },
+            totalMealCost : { $gte : minCost, $lte : maxCost }
+        });
+
+        console.log("Matching recipes count:", recipes.length);
         if (recipes.length === 0) {
             return res.status(404).json({error: "No matching recipes found"});
         }
@@ -69,14 +84,19 @@ exports.generateUserMeals = async(req, res) => {
         for (let i = 0; i < goals.totalMeals; i++) {
             const recipe = recipes[Math.floor(Math.random() * recipes.length)];
             meals.push({
-                user:userId,
-                recipe: recipe._id,
-                day: Math.floor(i / user.mealsPerDay),
                 mealNumber : (i % user.mealsPerDay) + 1,
+                recipe: recipe._id
             })
         }
 
-        const savedMeals = await UserMeals.insertMany(meals);
+        const userMealsDoc = new UserMeals({
+            userId,
+            goalId: goals._id.toString(),
+            totalMeals : goals.totalMeals,
+            meals: meals
+        })
+
+        const savedMeals = await userMealsDoc.save();
 
         res.status(201).json({
             message: "User meals generated successfully",
@@ -109,7 +129,7 @@ exports.updateUserMeal = async(req, res) => {
 
 exports.deleteUserMeal = async(req, res) => {
     try{
-        const data = await meatParts.findByIdAndUpdate(req.params.id);
+        const data = await UserMeals.findByIdAndUpdate(req.params.id);
         if (!data) {
             return res.status(404).json({
                 error: "Recipe not found."

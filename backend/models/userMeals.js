@@ -8,12 +8,12 @@ const mealEntrySchema = new Schema({
 
 const userMealsSchema = new Schema({
     userId: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'UserData',
         required: true
     },
     goalId: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'UserGoals',
         required: true
     },
