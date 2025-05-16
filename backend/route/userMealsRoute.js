@@ -1,5 +1,6 @@
 const express = require("express");
 const UserMeals = require("../models/userMeals");
+const UserMealsController = require("../controllers/userMealsController")
 
 let router = express.Router();
 
@@ -48,22 +49,7 @@ router.get("/:id", async(req, res) => {
 });
 
 // #3 CreateOne
-router.post("/", async(req, res) => {
-    try{
-        const data = new UserMeals(req.body);
-        const savedData = await data.save();
-
-        res.status(201).json({
-            message: "New user successfully created.",
-            data : savedData
-        });
-    } catch (err) {
-        console.log("Error: ", err);
-        return res.status(500).json({
-            error: 'Internal Server Error.'
-        })
-    }
-});
+router.post("/", UserMealsController.generateUserMeals);
 
 
 // #4 Update One
