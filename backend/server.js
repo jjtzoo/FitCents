@@ -5,10 +5,12 @@ const recipes = require("./route/recipesRoute");
 const userData = require("./route/recipesRoute");
 const userGoals = require("./route/userGoalsRoute");
 const userMeals = require("./route/userMealsRoute");
-const meatParts = require("./route/meatPartsRoute")
+const meatParts = require("./route/meatPartsRoute");
+const dotenv = require("dotenv");
+dotenv.config({path: "./config.env"});
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3002
 
 
 app.use(cors());
