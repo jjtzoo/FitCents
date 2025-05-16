@@ -3,7 +3,7 @@ const UserGoals = require("../models/userGoals");
 
 exports.getAllUser = async (req, res) => {
     try {
-        const users = await userData.find();
+        const users = await UserData.find();
         if(users.length > 0) {
             return res.status(200).json({
                 message: "All user records retrieved!",
@@ -24,7 +24,7 @@ exports.getAllUser = async (req, res) => {
 
 exports.getOneUser = async(req, res) => {
     try {
-        const user = await userData.findById(req.params.id)
+        const user = await UserData.findById(req.params.id)
 
         if (!user) {
             return res.status(404).json({
@@ -56,8 +56,8 @@ exports.createUser = async (req, res) => {
             user: savedUser._id,
             totalOverallKcal: totalKcal,
             totalMeals: totalMeals,
-            costPerMeal: savedUser.budget / totalMeals,
-            kcalPerMeal: totalKcal / totalMeals,
+            costPerMeal: Number((savedUser.budget / totalMeals).toFixed(2)),
+            kcalPerMeal: Number((totalKcal / totalMeals).toFixed(2)),
         })
 
         const savedGoals = await newGoals.save();
@@ -87,9 +87,9 @@ exports.updateUser = async (req, res) => {
             { user: updatedUser._id},
             {
                 totalOverallKcal : totalKcal,
-                totalMeals : totalMeals,
-                costPerMeal : updatedUser.budget / totalMeals,
-                kcalPerMeal : totalKcal / totalMeals
+                totalMeals : Number(totalMeals.toFixed(2)),
+                costPerMeal : Number((updatedUser.budget / totalMeals).toFixed(2)),
+                kcalPerMeal : Number((totalKcal / totalMeals).toFixed(2))
             },
             { new : true }
         );

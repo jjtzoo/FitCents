@@ -1,5 +1,4 @@
 const express = require('express')
-const userData = require("../models/userData");
 const userController = require("../controllers/userDataController")
 
 

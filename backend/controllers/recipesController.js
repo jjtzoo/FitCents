@@ -49,13 +49,15 @@ exports.getOneRecipe = async(req, res) => {
 }
 
 exports.createRecipe = async(req, res) => {
+    console.log("POST /recipes body:", req.body);
+
     try {
         const newRecipe = new Recipes(req.body);
         const savedRecipe = await newRecipe.save();
 
         return res.status(201).json({
             message: "New recipe successfully created.",
-            savedRecipe
+            recipe: savedRecipe
         });
     } catch(err) {
         console.log("Error:", err);

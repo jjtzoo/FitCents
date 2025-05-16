@@ -2,7 +2,7 @@ const connectDB = require("./mongoose");
 const express = require("express");
 const cors = require("cors");
 const recipes = require("./route/recipesRoute");
-const userData = require("./route/recipesRoute");
+const userData = require("./route/userDataRoute");
 const userGoals = require("./route/userGoalsRoute");
 const userMeals = require("./route/userMealsRoute");
 const meatParts = require("./route/meatPartsRoute");
@@ -24,8 +24,11 @@ app.use("/userGoals", userGoals);
 app.use("/userMeals", userMeals);
 app.use("/meatParts", meatParts);
 
+app.get("/", (req, res) => {
+    res.send("API is running. Use /recipes, /userData, etc.");
+});
+
 app.listen(PORT, () => {
-    connectDB();
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}/`);
 });
 
