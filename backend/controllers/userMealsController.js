@@ -97,10 +97,13 @@ exports.generateUserMeals = async(req, res) => {
         })
 
         const savedMeals = await userMealsDoc.save();
+        const populatedMeals = await UserMeals.findById(savedMeals._id)
+        .populate({
+            path : 'meals.recipe'});
 
         res.status(201).json({
             message: "User meals generated successfully",
-            meals: savedMeals,
+            meals: populatedMeals,
         });
 
     } catch(err) {
@@ -129,14 +132,14 @@ exports.updateUserMeal = async(req, res) => {
 
 exports.deleteUserMeal = async(req, res) => {
     try{
-        const data = await UserMeals.findByIdAndUpdate(req.params.id);
+        const data = await UserMeals.findByIdAndDelete(req.params.id);
         if (!data) {
             return res.status(404).json({
                 error: "Recipe not found."
             })
         }
         res.status(200).json({
-            message: "Recipe successfully deleted.",
+            message: "Mealplan successfully deleted.",
             data: data
         })
     } catch (err) {
