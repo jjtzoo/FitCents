@@ -8,7 +8,8 @@ exports.getAllRecipe = async(req, res) => {
         })
         if (recipes.length > 0) {
             return res.status(200).json({
-                message: 'All recipes retrieve!',
+                message: `All Recipes Retrieved (${recipes.length})
+                Latest recipe: ${recipes[recipes.length -1].label}`,
                 recipes
             });
         } else {
@@ -54,7 +55,7 @@ exports.createRecipe = async(req, res) => {
     try {
         const newRecipe = new Recipes(req.body);
         const savedRecipe = await newRecipe.save();
-
+        console.log(savedRecipe);
         return res.status(201).json({
             message: "New recipe successfully created.",
             recipe: savedRecipe
