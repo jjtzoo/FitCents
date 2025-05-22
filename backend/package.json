@@ -5,5 +5,9 @@
     "express": "^5.1.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.3"
+  },
+  "scripts" : {
+      "start" : "node server.js",
+      "dev" : "node --watch server.js"
   }
 }

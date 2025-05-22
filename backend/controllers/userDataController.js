@@ -75,7 +75,12 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const updatedUser = await UserData.findByIdAndUpdate(req.params.id, req.body, { new: true});
+        console.log("Updating UserData with filter:", { _id: req.params.id });
+        const updatedUser = await UserData.findOneAndUpdate(
+            { _id: req.params.id },
+            req.body, 
+            { new: true}
+            );
         if (!updatedUser) {
             return res.status(404).json({ error: "User not found"});
         }
@@ -83,15 +88,17 @@ exports.updateUser = async (req, res) => {
         const totalKcal = updatedUser.targetCaloriesPerDay * updatedUser.dietDuration;
         const totalMeals = updatedUser.mealsPerDay * updatedUser.dietDuration;
 
-        const updatedGoals = await UserGoals.findByIdAndUpdate(
+        console.log("Updating UserGoals with filter:", { user: updatedUser._id });
+        const updatedGoals = await UserGoals.findOneAndUpdate(
             { user: updatedUser._id},
             {
+                user: updatedUser._id,
                 totalOverallKcal : totalKcal,
                 totalMeals : Number(totalMeals.toFixed(2)),
                 costPerMeal : Number((updatedUser.budget / totalMeals).toFixed(2)),
                 kcalPerMeal : Number((totalKcal / totalMeals).toFixed(2))
             },
-            { new : true }
+            { new : true, upsert: true }
         );
 
         res.status(200).json({
