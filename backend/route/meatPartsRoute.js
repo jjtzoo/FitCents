@@ -1,7 +1,7 @@
 const express = require("express");
 const meatPartsController = require("../controllers/meatPartsController");
 
-router = express.Router()
+router = express.Router();
 
 // #1 Retrieve All
 // http://localhost:3001/meatParts
