@@ -1,10 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { UserProvider } from "./context/UserContext.jsx"
 
 const App = () => {
   return (
-    <div>
+    <UserProvider>
       <h1>App</h1>
-    </div>
+    </UserProvider>
   )
 }
 
