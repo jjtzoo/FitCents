@@ -18,11 +18,11 @@ app.use(express.json());
 
 connectDB();
 
-app.use("/recipes",recipes);
-app.use("/userData", userData);
-app.use("/userGoals", userGoals);
-app.use("/userMeals", userMeals);
-app.use("/meatParts", meatParts);
+app.use("/api/recipes",recipes);
+app.use("/api/userData", userData);
+app.use("/api/userGoals", userGoals);
+app.use("/api/userMeals", userMeals);
+app.use("/api/meatParts", meatParts);
 
 app.get("/", (req, res) => {
     res.send("API is running. Use /recipes, /userData, etc.");
