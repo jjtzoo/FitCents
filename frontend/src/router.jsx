@@ -75,6 +75,10 @@ const router = createBrowserRouter([
             {
                 path: 'inventory',
                 element: <RealTimePantry />
+            },
+            {
+                path: 'magicdish',
+                element : <MagicRecipe />
             }
         ]
     },
