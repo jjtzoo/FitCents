@@ -116,5 +116,7 @@ const router = createBrowserRouter([
                 element : <Analytics />
             }
         ]
-    }
-])
+    },
+]);
+
+export default router;
