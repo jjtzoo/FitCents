@@ -10,10 +10,10 @@ const UserProvider = (props) => {
     const [userSelectedMeals , setUserSelectedMeals] = useState(null);
     const [userMeals, setUserMeals] = useState(null);
 
-    useEffect( async () => {
+    useEffect(() => {
         if (!user?.username) return;
 
-        const fetUserData = async () => {
+        const fetchUserData = async () => {
             setLoading(true);
             try {
                 const res = await axios.get(`http://localhost:4000/api/userData/${username}`)
@@ -24,6 +24,8 @@ const UserProvider = (props) => {
                 setLoading(false);
             }
         }
+
+        fetchUserData();
     }, [user?.username])
 
     const myObj = {
