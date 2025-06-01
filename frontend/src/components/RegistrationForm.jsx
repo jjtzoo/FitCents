@@ -11,10 +11,14 @@ const RegistrationForm = () => {
     const [weight, setWeight] = useState(0);
     const [activityLevel, setActivityLevel] = useState("");
     const [height, setHeight] = useState(0);
+    const [rawHeight, setRawHeight] = useState('');
     const [error, setError] = useState(null);
 
     const handleHeight = (e) => {
-        const convertedHeight = heightConverter(e.target.value);
+        const input = e.target.value;
+        setRawHeight(input);
+
+        const convertedHeight = heightConverter(input);
 
         if (convertedHeight === null) {
             setError(`Please enter height in format like 5'7" between 4'0" and 7'11". No spaces in between!`)
@@ -22,8 +26,6 @@ const RegistrationForm = () => {
             setError('');
             setHeight(convertedHeight);
         }
-        setHeight(convertedHeight);
-        return `${convertedHeight} cm`
     }
 
     return (
@@ -122,8 +124,8 @@ const RegistrationForm = () => {
                     <div>
                         <label htmlFor="height">Height </label>
                         <input 
-                        type="number"
-                        value={height}
+                        type="text"
+                        value={rawHeight}
                         onChange={handleHeight} 
                         />
                         {error && (
@@ -131,6 +133,8 @@ const RegistrationForm = () => {
                                 {error}
                             </p>
                         )}
+
+                        <p>Converted to {height} cm</p>
                     </div>
 
                     <div>
