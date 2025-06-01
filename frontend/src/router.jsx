@@ -52,7 +52,7 @@ const router = createBrowserRouter([
                 element : <UserData />
             },
             {
-                path : '/automealplan',
+                path : 'automealplan',
                 element : <AutoMealPlan />
             },
         ]
