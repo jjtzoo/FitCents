@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { createItem } from '../api/crud'
 import { heightConverter } from '../utils/heightConverter'
+import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 
 const RegistrationForm = () => {
     const [gender, setGender] = useState("");
@@ -12,7 +13,9 @@ const RegistrationForm = () => {
     const [activityLevel, setActivityLevel] = useState("");
     const [height, setHeight] = useState(0);
     const [rawHeight, setRawHeight] = useState('');
+    const [weightGoal, setWeightGoal] = useState('');
     const [error, setError] = useState(null);
+    const [restrictions, setRestrictions] = useState([]);
 
     const handleHeight = (e) => {
         const input = e.target.value;
@@ -27,6 +30,20 @@ const RegistrationForm = () => {
             setHeight(convertedHeight);
         }
     }
+
+    const handleRestrictions = (e) => {
+        let {value, checked} = e.target;
+
+        if (value === 'none') {
+            setRestrictions([]);
+        } else {
+            setRestrictions((currentRestrictions) => {
+                return checked 
+                    ? [...currentRestrictions, value] 
+                    : currentRestrictions.filter((uncheckedItem) => uncheckedItem !== value);
+            });
+        }
+    };
 
     return (
         
@@ -53,7 +70,7 @@ const RegistrationForm = () => {
                         </label>
                         <input 
                             type='number'
-                            name='age'
+                            id='age'
                             placeholder='Enter Your Age.'
                             value = {age}
                             onChange={(e) => setAge(Number(e.target.value))}
@@ -77,7 +94,6 @@ const RegistrationForm = () => {
                     <fieldset>
                         <legend>
                             <div>
-                                
                                 <label>
                                     <input 
                                     type='radio'
@@ -127,6 +143,7 @@ const RegistrationForm = () => {
                         type="text"
                         value={rawHeight}
                         onChange={handleHeight} 
+                        id='height'
                         />
                         {error && (
                             <p>
@@ -139,7 +156,11 @@ const RegistrationForm = () => {
 
                     <div>
                         <label htmlFor="activity-level"> Activity Level:</label>
-                        <select id="activity-level" value={activityLevel} onChange={(e) => setActivityLevel(e.target.value)}>
+                        <select 
+                        id="activity-level" 
+                        value={activityLevel} 
+                        onChange={(e) => setActivityLevel(e.target.value)}
+                        >
                             <option value="sedentary"> little/no exercise </option>
                             <option value="lightly_active"> 1-3 days/week</option>
                             <option value="moderately_active">3-5 days/week</option>
@@ -147,6 +168,34 @@ const RegistrationForm = () => {
                             <option value="extra_active">Extra Active - physical job + exercise</option>
                         </select>
                     </div>
+                    <div>
+                        <label htmlFor="weightGoal">Select Your Weight Loss Goal</label>
+                        <select
+                            id="weightGoal"
+                            value={weightGoal}
+                            onChange={(e) => setWeightGoal(e.target.value)}
+                        >
+                            <option value="">-- Select a Goal --</option>
+                            <option value="extreme">Extreme Weight Loss</option>
+                            <option value="high">High Weight Loss</option>
+                            <option value="moderate">Moderate Weight Loss</option>
+                        </select>
+                    </div>
+
+                    <fieldset>
+                        <legend>Dietary Restrictions</legend>
+                        {restrictionOptions.map((restriction) => (
+                            <label key={restriction}>
+                                <input 
+                                    type="checkbox" 
+                                    name="restrictions"
+                                    checked={restrictions.includes(restriction)}
+                                    onChange={handleRestrictions}
+                                />
+                                {restriction.replace(/_/g, ' ')}
+                            </label>
+                        ))}
+                    </fieldset>
                 </fieldset>
             </form>
         </>
