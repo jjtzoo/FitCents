@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createItem } from '../api/crud'
 import { heightConverter } from '../utils/heightConverter'
 import { restrictionOptions } from './RegistrationForm/restrictionOptions'
+import { conflictMap } from './RegistrationForm/conflictMap'
 
 const RegistrationForm = () => {
     const [gender, setGender] = useState("");
@@ -37,13 +38,53 @@ const RegistrationForm = () => {
 
         if (value === 'none') {
             setRestrictions([]);
-        } else {
-            setRestrictions((currentRestrictions) => {
-                return checked 
-                    ? [...currentRestrictions, value] 
-                    : currentRestrictions.filter((uncheckedItem) => uncheckedItem !== value);
-            });
-        }
+            setDisabledRestrictions([]);
+            return 
+        } 
+
+        setRestrictions((currentRestrictions) => {
+                let newRestrictions;
+
+                if (checked) {
+                    newRestrictions = [...currentRestrictions, value]
+
+                    if (conflictMap[value]) {
+                        const conflictsToAdd = conflictMap[value];
+                        newRestrictions = Array.from(new Set([...newRestrictions, ...conflictsToAdd]));
+                    setDisabledRestrictions((restrictionDisabled) => {
+                        return Array.from(new Set([...restrictionDisabled, ...conflictsToAdd]))
+                    })
+                    }
+                } else {
+                    newRestrictions = currentRestrictions.filter((r) => r !== value);
+
+                    if (conflictMap[value]) { const conflictsToRemove = conflictMap[value];
+                        setDisabledRestrictions((restrictionDisabled) => 
+                         restrictionDisabled.filter((item) => !conflictsToRemove.includes(item))
+                        );
+
+                        newRestrictions = newRestrictions.filter((r) => 
+                            !conflictsToRemove.includes(r) ||
+                            currentRestrictions.some((other) =>
+                                other !== value && (conflictMap[other] || []).includes(r)
+                        )
+                        
+                    );
+
+                    setDisabledRestrictions((restrictionDisabled) => {
+                        return restrictionDisabled.filter((item) => 
+                            !conflictsToRemove.includes(item) ||
+                            currentRestrictions.some((other) => 
+                                other !== value && (conflictMap[other] || []).includes(item)
+                            )
+                        );
+                    });
+                        
+                }
+            }
+            return newRestrictions    
+        });
+        
     };
 
     return (
@@ -185,12 +226,23 @@ const RegistrationForm = () => {
 
                     <fieldset>
                         <legend>Dietary Restrictions</legend>
+                        <label>
+                            <input 
+                                type="checkbox"
+                                value="none"
+                                checked={restrictions.length === 0}
+                                onChange={handleRestrictions} 
+                            />
+                            NoRestrictions
+                        </label>
                         {restrictionOptions.map((restriction) => (
                             <label key={restriction}>
                                 <input 
                                     type="checkbox" 
                                     name="restrictions"
+                                    value={restriction}
                                     checked={restrictions.includes(restriction)}
+                                    disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
                                     onChange={handleRestrictions}
                                 />
                                 {restriction.replace(/_/g, ' ')}

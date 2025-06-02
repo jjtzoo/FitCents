@@ -5,6 +5,7 @@ export const restrictionOptions = [
     'no_seafood',
     'no_rice',
     'no_egg',
+    'no_dairy',
     'vegetarian',
     'vegan'
 ]
