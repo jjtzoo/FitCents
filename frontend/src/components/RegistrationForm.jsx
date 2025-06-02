@@ -16,6 +16,7 @@ const RegistrationForm = () => {
     const [weightGoal, setWeightGoal] = useState('');
     const [error, setError] = useState(null);
     const [restrictions, setRestrictions] = useState([]);
+    const [disabledRestrictions, setDisabledRestrictions] = useState([]);
 
     const handleHeight = (e) => {
         const input = e.target.value;
