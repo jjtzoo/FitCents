@@ -94,10 +94,23 @@ const RegistrationForm = () => {
         setPreferences((preference) => 
             checked
                 ? [...preference, value]
-                : [preference.filter((preferenceNot) => preferenceNot !== value)]
+                : preference.filter((preferenceNot) => preferenceNot !== value)
         );
     }
 
+
+    const userForms = {
+        name : name,
+        age: age,
+        gender: gender,
+        weight: weight,
+        activityLevel: activityLevel,
+        weightGoal: weightGoal,
+        restrictions: restrictions,
+        preferences: preferences
+    }
+
+    console.log(userForms);
     return (
         
         <>
@@ -132,12 +145,12 @@ const RegistrationForm = () => {
 
 
                     <div>
-                        <label htmlFor='email'>
+                        <label htmlFor='userEmail'>
                         Email
                         </label>
                         <input 
                             type='email'
-                            name='email'
+                            id='userEmail'
                             placeholder='Enter your email address'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -187,6 +200,7 @@ const RegistrationForm = () => {
                         type="number" 
                         value={weight}
                         onChange={(e) => setWeight(Number(e.target.value))}
+                        id='weight'
                         />
                     </div>
 
@@ -262,16 +276,17 @@ const RegistrationForm = () => {
                     </fieldset>
                     <fieldset>
                         <legend>Cuisine Preferences</legend>
-                        {preferenceOption.map((preference) => (
-                            <label key={preference}>
+                        {preferenceOption.map((cuisine) => (
+                            <label key={cuisine} htmlFor={cuisine}>
                                 <input 
                                     type="checkbox"
-                                    name={preferences}
-                                    value={preferences}
-                                    checked={preferences.includes(preference)}
+                                    name="preferences"
+                                    id={cuisine}
+                                    value={cuisine}
+                                    checked={preferences.includes(cuisine)}
                                     onChange={handlePreferences}
                                 />
-                                {preference}
+                                {cuisine}
                             </label>
                         ))}
                     </fieldset>
