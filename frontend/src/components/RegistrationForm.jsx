@@ -4,6 +4,7 @@ import { createItem } from '../api/crud'
 import { heightConverter } from '../utils/heightConverter'
 import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 import { conflictMap } from './RegistrationForm/conflictMap'
+import { preferenceOption } from './RegistrationForm/preferenceOptions'
 
 const RegistrationForm = () => {
     const [gender, setGender] = useState("");
@@ -18,6 +19,7 @@ const RegistrationForm = () => {
     const [error, setError] = useState(null);
     const [restrictions, setRestrictions] = useState([]);
     const [disabledRestrictions, setDisabledRestrictions] = useState([]);
+    const [preferences, setPreferences] = useState([]);
 
     const handleHeight = (e) => {
         const input = e.target.value;
@@ -86,6 +88,15 @@ const RegistrationForm = () => {
         });
         
     };
+
+    const handlePreferences = (e) => {
+        const { value, checked } = e.target;
+        setPreferences((preference) => 
+            checked
+                ? [...preference, value]
+                : [preference.filter((preferenceNot) => preferenceNot !== value)]
+        );
+    }
 
     return (
         
@@ -246,6 +257,21 @@ const RegistrationForm = () => {
                                     onChange={handleRestrictions}
                                 />
                                 {restriction.replace(/_/g, ' ')}
+                            </label>
+                        ))}
+                    </fieldset>
+                    <fieldset>
+                        <legend>Cuisine Preferences</legend>
+                        {preferenceOption.map((preference) => (
+                            <label key={preference}>
+                                <input 
+                                    type="checkbox"
+                                    name={preferences}
+                                    value={preferences}
+                                    checked={preferences.includes(preference)}
+                                    onChange={handlePreferences}
+                                />
+                                {preference}
                             </label>
                         ))}
                     </fieldset>
