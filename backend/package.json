@@ -6,8 +6,17 @@
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.3"
   },
-  "scripts" : {
-      "start" : "node server.js",
-      "dev" : "node --watch index.js"
-  }
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch index.js"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module"
 }
