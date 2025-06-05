@@ -1,9 +1,11 @@
-const connectDB = require("./mongoose");
-const express = require("express");
-const cors = require("cors");
+import connectDB from "./config/db.js"
+import express from "express";
+import cors from ("cors")
 
-const dotenv = require("dotenv");
-dotenv.config({path: "./config.env"});
+import dotEnv from "dotenv";
+
+dotEnv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 3002
