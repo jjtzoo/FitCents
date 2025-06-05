@@ -9,9 +9,10 @@ const userSchema = new mongoose.Schema({
     gender: { type:String, required: true},
     weight: {type: Number, required: true},
     activityLevel: {type: String, required:true},
-    weightGoal: { type: Number, requried: true},
+    weightGoal: { type: Number, required: true},
     restrictions: { type: [String], default: []},
     preferences: { type: [String], default: []},
+    role: {type: String, enum: ["regular", "premium", "developer" ], default: "regular"}
 },
 {timestamps: true});
 
