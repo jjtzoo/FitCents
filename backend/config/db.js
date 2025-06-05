@@ -1,17 +1,14 @@
+import mongoose from "mongoose";
+import dotEnv from "dotenv";
 
-const mongoose = require('mongoose');
-require("dotenv").config({path: "./config.env"})
+dotEnv.config()
 
 const uri = process.env.ATLAS_URI;
 
 
 const connectDB = async() => {
   try {
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverApi: { version: '1', strict: true, deprecationErrors: true}
-    });
+    await mongoose.connect(uri);
     console.log('✅ Mongoose connected');
   } catch (err) {
     console.error('❌ Mongoose connection error:', err);
