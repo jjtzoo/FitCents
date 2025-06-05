@@ -40,10 +40,12 @@ export const list = async(req, res) => {
 // Read
 export const read = async(req, res) => {
     try {
-        const data = await User.findOne(req.params.username);
+        const data = await User.findOne({ username : req.params.username });
         if (!data) {
-            res.status(404).json({ error: "No data found"})
+            return res.status(404).json({ error: "No data found"});
         }
+        
+        res.status(200).json(data);
     } catch (err) {
         console.log("Error: ", err);
         return res.status(500).json({
@@ -65,10 +67,8 @@ export const update = async(req, res) => {
             });
         }
 
-        const updatedData = await UserData.findOneAndReplace( 
-            {
-                username
-            }, 
+        const updatedData = await User.findOneAndReplace( 
+            { username}, 
             newData, 
             { 
                 new : true,
@@ -98,7 +98,7 @@ export const patch = async (req, res) => {
         );
 
         if (!patchData) {
-            res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: "User not found" });
         }
         res.status(200).json({
         message: "User updated successfully.",
@@ -115,10 +115,15 @@ export const deleteUser = async (req, res) => {
     try {
         const username = req.params.username;
 
-        await User.findOneAndDelete(username);
+        await User.findOneAndDelete( {username});
+        if (!deleted) {
+         res.status(404).json({ error: "User not found" });
+        }
+
         res.json({message: "Succesfully deleted"})
     } catch (error) {
-        res.status(400).json({ error: err.message});
+        console.log("Error deleting user:", err);
+        res.status(500).json({ error: "Internal Server Error." });
     }
 
 }
