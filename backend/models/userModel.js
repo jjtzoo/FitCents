@@ -40,12 +40,13 @@ const userSchema = new mongoose.Schema({
             type: String, 
             required: true, 
             enum: ["extreme", "moderate", "gain"]
-        }
+        },
+        bmi : { type: Number },
+        bmr: {type: Number },
+        tdee: { type: Number},
+        targetCalories: { type: Number },
+        targetWeight_kilo : {type: Number}
     },
-    bmi : { type: Number },
-    bmr: {type: Number },
-    tdee: { type: Number},
-    targetCalories: { type: Number },
     restrictions: { 
         type: [String], 
         enum: [
