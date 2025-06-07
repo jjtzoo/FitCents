@@ -3,10 +3,12 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 
 // CRUD
 
-// Create
+// Register
 export const createUser = async (req, res) => {
     try {
-        
+        const { password } = req.body.auth;
+        const passwordHash = await bcrypt.hash(password, 10);
+
         const {
             weight_kg,
             height_cm,
@@ -25,6 +27,10 @@ export const createUser = async (req, res) => {
 
         const userUpdatedInfo = {
             ...req.body,
+            auth : {
+                ...req.body.auth,
+                passwordHash
+            },
             biometrics : {
                 ...req.body.biometrics,
                 bmi: userBMI,
@@ -47,6 +53,7 @@ export const createUser = async (req, res) => {
         });
     }
 }
+
 
 // List
 
