@@ -1,16 +1,45 @@
 import User from "../models/userModel.js";
+import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetTDEE, targetWeight } from "../utils/calculateBMR.js";
 
 // CRUD
 
 // Create
 export const createUser = async (req, res) => {
     try {
-        const data = new User(req.body);
-        const savedData = await data.save();
-        res.status(201).json({
-            message : "Data created successfully!",
-            data: savedData
-        })
+        
+        const {
+            weight_kg,
+            height_cm,
+            age,
+            gender,
+            activityLevel,
+            weightGoal
+        } = req.body.biometrics
+
+        const userBMR = calculateUserBMR(weight_kg, height_cm, age, gender);
+        const userCurrentTDEE = calculateCurrentTDEE(userBMR, activityLevel);
+        const userTargetTDEE = targetTDEE(userCurrentTDEE, gender, weightGoal);
+        const userBMI = calculateUserBMI(weight_kg, height_cm);
+        const userTargetBMI = targetBMI(userBMI, age);
+        const userTargetWeight = targetWeight(userTargetBMI, height_cm);
+
+        const userUpdatedInfo = {
+            ...req.body,
+            biometrics : {
+                ...req.body.biometrics,
+                bmi: userBMI,
+                bmr: userBMR,
+                tdee: userCurrentTDEE,
+                targetCalories: userTargetTDEE,
+                targetWeight: userTargetWeight
+            }
+        };
+
+        const userFullInfo = new User(userUpdatedInfo);
+
+        await userFullInfo.save();
+        res.json(userFullInfo);
+
     } catch (err) {
         console.log("Creation Error: ", err);
         res.status(500).json({
