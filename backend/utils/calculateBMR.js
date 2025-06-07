@@ -15,6 +15,24 @@ export const calculateUserBMI = (weight_kg, height_cm) => {
     return weight_kg / squared(height_m);
 }
 
+export const targetBMI = (userBMI, userAge) => {
+    if (userAge < 18) {
+        return "BMI calculations will not be accurate"
+    }
+
+    if (userBMI > 24.9) {
+        return 24.9;
+    } else if (userBMI >= 18.5 && userBMI <=24.9) {
+        return userBMI
+    } else {
+        return 18.5
+    }
+}
+
+export const targetWeight = (targetBMI, userHeight) => {
+    return targetBMI * squared(userHeight/100);
+}
+
 export const calculateCurrentTDEE = ( userBMR, activity_level) => {
     const activityMultipliers = {
         sedentary : 1.2,
