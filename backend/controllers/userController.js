@@ -132,8 +132,28 @@ export const update = async(req, res) => {
             newData.bmr = userBMR;
             newData.tdee = Math.round(userCurrentTDEE);
             newData.targetCalories = Math.round(userTargetTDEE);
+
+            newData.biometrics = {
+            ...newData.biometrics,
+            bmi: userBMI,
+            bmr: userBMR,
+            tdee: userCurrentTDEE,
+            targetCalories: userTargetTDEE
+            }
         }
 
+        const putData = await User.findOneAndUpdate(
+            { username },
+            newData,
+            { new: true, runValidators: true}
+        );
+
+        if (!putData) {
+            return res.status(404).json({ error: "User not found."});
+        }
+        
+        res.json(putData)
+        
     } catch (err) {
         console.log("Error: ", err);
         res.status(500).json({ error: "Internal Server Error."});

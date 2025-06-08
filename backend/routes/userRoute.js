@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post("/register", createUser );
 router.get("/", list);
+router.get("/profile", isAuthenticated, read);
 router.get("/:username", read);
 router.put("/:username", update);
 router.patch("/:username", patch);

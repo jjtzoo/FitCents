@@ -4,6 +4,7 @@ import mongoStore from "connect-mongo";
 import express from "express";
 import cors from "cors";
 import userRoute from "./routes/userRoute.js"
+import authRoute from "./routes/authRoutes.js"
 
 import dotEnv from "dotenv";
 
@@ -29,6 +30,7 @@ app.use(session({
 }))
 
 app.use("/api/users", userRoute);
+app.use("/api/auth", authRoute);
 
 
 
