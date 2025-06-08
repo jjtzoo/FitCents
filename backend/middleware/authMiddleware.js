@@ -21,4 +21,6 @@ export const isAuthorized = (req, res, next) => {
     if(sessionUser.auth?.username !== targetUsername) {
         return res.status(403).json({ error: "Forbidden: You are not the owner of this resource."})
     }
+
+    next();
 }
