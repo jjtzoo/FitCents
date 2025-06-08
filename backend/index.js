@@ -1,7 +1,6 @@
 import connectDB from "./config/db.js"
 import session from "express-session";
 import mongoStore from "connect-mongo";
-import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import userRoute from "./routes/userRoute.js"
@@ -24,6 +23,9 @@ app.use(session({
     store: mongoStore.create({
         mongoUrl: process.env.ATLAS_URI,
     }),
+    cookie: {
+        maxAge : 1000 * 60 * 60 * 24
+    }
 }))
 
 app.use("/api/users", userRoute);

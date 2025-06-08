@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import bcrypt from "bcrypt";
 import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, targetTDEE, targetWeight } from "../utils/calculateBiometrics.js";
 
 // CRUD

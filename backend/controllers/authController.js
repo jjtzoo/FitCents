@@ -22,4 +22,12 @@ export const login = async (req, res) => {
         console.log("Error: ", err);
         res.status(500).json({ error: "Internal Server Error."})
     }
-}
+};
+
+export const logout = async (req, res) => {
+    req.session.destroy(err => {
+        if (err) return res.status(500).json({ error: "Logout Failed."});
+        res.clearCookie("connect.sid");
+        res.json({ message: "Logged out successfully"});
+    })
+};
