@@ -16,7 +16,14 @@ export const login = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials."});
         }
 
-        req.session.userId = user._id;
+        req.session.user = {
+            _id: user._id,
+            auth: {
+                username: user.auth.username,
+                email: user.auth.email,
+            },
+            role: user.role,
+        };
         res.status(200).json({ message: "Login Succesfully, ", user })
     } catch (err) {
         console.log("Error: ", err);
