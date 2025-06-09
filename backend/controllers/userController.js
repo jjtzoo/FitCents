@@ -7,10 +7,11 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 // Register
 export const createUser = async (req, res) => {
     try {
-        const { password } = req.body.auth;
-        const passwordHash = await bcrypt.hash(password, 10);
+        const { username, email, password } = req.body.auth;
+        
 
         const {
+            name,
             weight_kg,
             height_cm,
             age,
@@ -19,6 +20,8 @@ export const createUser = async (req, res) => {
             weightGoal
         } = req.body.biometrics
 
+        const passwordHash = await bcrypt.hash(password, 10);
+
         const userBMI = calculateUserBMI(weight_kg, height_cm);
         const userBMR = calculateUserBMR(weight_kg, height_cm, age, gender);
         const userCurrentTDEE = Math.round(calculateCurrentTDEE(userBMR, activityLevel));
@@ -26,26 +29,35 @@ export const createUser = async (req, res) => {
         const userTargetBMI = targetBMI(userBMI, age)
         const userTargetWeight = Math.round(targetWeight(userTargetBMI, height_cm));
 
-        const userUpdatedInfo = {
-            ...req.body,
+        const userUpdatedInfo = new User ({
             auth : {
-                ...req.body.auth,
+                username,
+                email,
                 passwordHash
             },
+            role: req.body.role || "regular",
             biometrics : {
-                ...req.body.biometrics,
+                name,
+                age,
+                gender,
+                height_cm,
+                weight_kg,
+                activityLevel,
+                weightGoal,
                 bmi: userBMI,
                 bmr: userBMR,
                 tdee: userCurrentTDEE,
                 targetCalories: userTargetTDEE,
                 targetWeight: userTargetWeight
-            }
-        };
+            },
+            restrictions: req.body.restrictions || [],
+            preferences: req.body.preferences || [],
+            dietDuration_days: req.body.dietDuration_days || 7,
+            budget_php: req.body.budget_php
+        });
 
-        const userFullInfo = new User(userUpdatedInfo);
-
-        await userFullInfo.save();
-        res.json(userFullInfo);
+        await userUpdatedInfo.save();
+        res.status(201).json(userUpdatedInfo);
 
     } catch (err) {
         console.log("Creation Error: ", err);
