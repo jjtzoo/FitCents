@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const recipeSchema = mongoose.Schema({
     recipeName : { type: String, required: true },
+    type: { type: String, enum: ["snack", "main"], required: true},
     label: { type: String, required: true },
     totalMealCost : { type: Number, required: true },
     caloriesPerServing: { type: Number, required: true },

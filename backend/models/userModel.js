@@ -84,7 +84,14 @@ const userSchema = new mongoose.Schema({
     },
     budget_php: { 
         type: Number, 
-        required: true }
+        required: true 
+    },
+    mealsPerDay : {
+        type: Number,
+        default : 3,
+        min: 2,
+        max: 5,
+    }
 },
 {timestamps: true});
 
