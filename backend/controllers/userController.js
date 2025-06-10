@@ -7,10 +7,11 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 // Register
 export const createUser = async (req, res) => {
     try {
-        const { password } = req.body.auth;
-        const passwordHash = await bcrypt.hash(password, 10);
+        const { username, email, password } = req.body.auth;
+        
 
         const {
+            name,
             weight_kg,
             height_cm,
             age,
@@ -19,6 +20,8 @@ export const createUser = async (req, res) => {
             weightGoal
         } = req.body.biometrics
 
+        const passwordHash = await bcrypt.hash(password, 10);
+
         const userBMI = calculateUserBMI(weight_kg, height_cm);
         const userBMR = calculateUserBMR(weight_kg, height_cm, age, gender);
         const userCurrentTDEE = Math.round(calculateCurrentTDEE(userBMR, activityLevel));
@@ -26,26 +29,35 @@ export const createUser = async (req, res) => {
         const userTargetBMI = targetBMI(userBMI, age)
         const userTargetWeight = Math.round(targetWeight(userTargetBMI, height_cm));
 
-        const userUpdatedInfo = {
-            ...req.body,
+        const userUpdatedInfo = new User ({
             auth : {
-                ...req.body.auth,
+                username,
+                email,
                 passwordHash
             },
+            role: req.body.role || "regular",
             biometrics : {
-                ...req.body.biometrics,
+                name,
+                age,
+                gender,
+                height_cm,
+                weight_kg,
+                activityLevel,
+                weightGoal,
                 bmi: userBMI,
                 bmr: userBMR,
                 tdee: userCurrentTDEE,
                 targetCalories: userTargetTDEE,
                 targetWeight: userTargetWeight
-            }
-        };
+            },
+            restrictions: req.body.restrictions || [],
+            preferences: req.body.preferences || [],
+            dietDuration_days: req.body.dietDuration_days || 7,
+            budget_php: req.body.budget_php
+        });
 
-        const userFullInfo = new User(userUpdatedInfo);
-
-        await userFullInfo.save();
-        res.json(userFullInfo);
+        await userUpdatedInfo.save();
+        res.status(201).json(userUpdatedInfo);
 
     } catch (err) {
         console.log("Creation Error: ", err);
@@ -199,4 +211,30 @@ export const deleteUser = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error." });
     }
 
+}
+
+export const updateMealsPerDay = async (req, res) => {
+    try {
+        const { mealsPerDay } = req.body;
+        const userId = req.session.user?._id;
+
+        if (!userId) {
+            return res.status(401).json({error: "Unauthorized"});
+        }
+
+        if (mealsPerDay < 2 || mealsPerDay > 5) {
+            return res.status(400).json({ error: "Meals per day must be between 2 and 5."});
+        }
+
+        const updatedNumber = await userModel.findByIdAndUpdate(
+            userId,
+            { mealsPerDay },
+            { new:true }
+        );
+
+        res.status(200).json({ message: "Meals/Day updated.", user: updatedNumber})
+    } catch(err) {
+        console.error("Error updating.", err);
+        res.status(500).json({ error: "Internal Server Error" })
+    }
 }
