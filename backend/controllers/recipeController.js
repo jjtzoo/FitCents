@@ -2,23 +2,36 @@ import recipeModel from "../models/recipeModel.js"
 
 export const createRecipes = async (req, res) => {
     try {
-        const recipe = req.body
+        const data = req.body
 
-        const totalCalories = recipe.ingredients.reduce((total, ingredient) => {
-            return total + (ingredient.calories || 0);
-        }, 0);
+        const recipes = Array.isArray(data) ? data: [data];
 
-        const totalMealCost = recipe.ingredients.reduce((total, ingredient) => {
-            return total + (ingredient.cost || 0);
-        }, 0);
+        const processedRecipes = recipes.map((recipe) => {
+            if (!Array.isArray(recipe.ingredients)) {
+                throw new Error("Each recipe must have an array of ingredients")
+            }
 
-        const newRecipe = new recipeModel({
-            ...recipe,
-            caloriesPerServing : totalCalories,
-            totalMealCost
+            const totalCalories = recipe.ingredients.reduce((total, ingredient) => {
+                return total + (ingredient.calories || 0);
+            }, 0);
+
+            const totalMealCost = recipe.ingredients.reduce((total, ingredient) => {
+                return total + (ingredient.cost || 0);
+            }, 0)
+
+            return {
+                ...recipe,
+                caloriesPerServing: totalCalories,
+                totalMealCost
+            }
         })
 
-        await newRecipe.save();
+        const savedRecipes = await recipeModel.insertMany(processedRecipes);
+
+        res.status(201).json({
+            message: recipes.length > 1 ? "Recipes created successfully." : "Recipe created successfully.",
+            recipes: savedRecipes
+        })
     } catch (err) {
         console.log("Error creating recipe.", err);
         res.status(500).json({ error: "Internal Server Error"});
@@ -67,28 +80,3 @@ export const getRecipes = async (req, res) => {
     }
 }
 
-export const updateMealsPerDay = async (req, res) => {
-    try {
-        const { mealsPerDay } = req.body;
-        const userId = req.session.user?._id;
-
-        if (!userId) {
-            return res.status(401).json({error: "Unauthorized"});
-        }
-
-        if (mealsPerDay < 2 || mealsPerDay > 5) {
-            return res.status(400).json({ error: "Meals per day must be between 2 and 5."});
-        }
-
-        const updatedNumber = await userModel.findByIdAndUpdate(
-            userId,
-            { mealsPerDay },
-            { new:true }
-        );
-
-        res.status(200).json({ message: "Meals/Day updated.", user: updatedNumber})
-    } catch(err) {
-        console.error("Error updating.", err);
-        res.status(500).json({ error: "Internal Server Error" })
-    }
-}

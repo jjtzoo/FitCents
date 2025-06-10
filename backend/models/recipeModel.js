@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const recipeSchema = mongoose.Schema({
     recipeName : { type: String, required: true },
-    type: { type: String, enum: ["snack", "main"], required: true},
+    mealType: { type: String, enum: ["snack", "main"], required: true},
     label: { type: String, required: true },
     totalMealCost : { type: Number, required: true },
     caloriesPerServing: { type: Number, required: true },
@@ -16,8 +16,6 @@ const recipeSchema = mongoose.Schema({
             'no_rice',
             'no_egg',
             'no_dairy',
-            'vegetarian',
-            'vegan'
         ],
         default: []
     },
@@ -44,8 +42,10 @@ const recipeSchema = mongoose.Schema({
             calories: Number,
             cost: Number,
             ingredient: String,
-            label: String
-        }
+            label: String,
+            category: {type: String, enum : ["main", "condiments"]}
+        },
+        
     ]
 })
 
