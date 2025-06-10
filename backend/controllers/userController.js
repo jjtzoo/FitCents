@@ -213,6 +213,7 @@ export const deleteUser = async (req, res) => {
 
 }
 
+
 export const updateMealsPerDay = async (req, res) => {
     try {
         const { mealsPerDay } = req.body;
