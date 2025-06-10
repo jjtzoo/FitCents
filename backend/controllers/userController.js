@@ -213,24 +213,25 @@ export const deleteUser = async (req, res) => {
 
 }
 
+
 export const updateMealsPerDay = async (req, res) => {
     try {
         const { mealsPerDay } = req.body;
-        const userId = req.session.user?._id;
-
-        if (!userId) {
-            return res.status(401).json({error: "Unauthorized"});
-        }
+        const { username } = req.params;
 
         if (mealsPerDay < 2 || mealsPerDay > 5) {
             return res.status(400).json({ error: "Meals per day must be between 2 and 5."});
         }
 
         const updatedNumber = await userModel.findByIdAndUpdate(
-            userId,
+            { "auth.username" : username },
             { mealsPerDay },
             { new:true }
         );
+
+        if (!updatedNumber) {
+            return res.status(404).json({ error: "User not found."})
+        }
 
         res.status(200).json({ message: "Meals/Day updated.", user: updatedNumber})
     } catch(err) {
