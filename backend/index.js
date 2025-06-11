@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoute from "./routes/userRoute.js"
 import authRoute from "./routes/authRoute.js"
 import recipeRoute from "./routes/recipeRoute.js"
+import mealplanRoute from "./routes/mealPlanRoute.js"
 
 import dotEnv from "dotenv";
 
@@ -33,6 +34,7 @@ app.use(session({
 app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/recipes", recipeRoute);
+app.use("/api/meal-plan", mealplanRoute);
 
 
 
