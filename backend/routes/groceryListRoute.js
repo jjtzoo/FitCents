@@ -1,6 +1,6 @@
 import express from "express";
 import { generateGroceryList, getGroceryList, regenerateGroceryList } from "../controllers/groceryListController.js";
-import { isAuthenticated, isAuthorized } from "../middleware/authMiddleware.js"
+import { isAuthenticated} from "../middleware/authMiddleware.js"
 import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
@@ -8,7 +8,6 @@ const router = express.Router();
 router.get(
     "/:mealPlanId",
     isAuthenticated,
-    isAuthorized,
     requireRole(["regular", "premium", "developer"]),
     getGroceryList
 );
@@ -17,7 +16,6 @@ router.get(
 router.post(
     "/:mealPlanId",
     isAuthenticated,
-    isAuthorized,
     requireRole(["regular", "premium", "developer"]),
     generateGroceryList
 );
@@ -27,7 +25,6 @@ router.post(
 router.put(
     "/:mealPlanId/regenerate",
     isAuthenticated,
-    isAuthorized,
     requireRole(["regular", "premium", "developer"]),
     regenerateGroceryList
 );
