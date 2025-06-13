@@ -5,12 +5,17 @@ import { buildGroceryList } from "../utils/groceryListBuilder.js";
 
 export const generateGroceryList = async (req, res) => {
     const { mealPlanId } = req.params;
+    const sessionUserId = req.session?.user?._id
 
     try { 
         const mealPlan = await MealPlan.findById(mealPlanId);
 
         if (!mealPlan) {
-            return res.status(404).json({ error: "Meal plan not found." });
+            return res.status(404).json({ error: "Grocery list not found." });
+        }
+
+        if (String(mealPlan.user) !== sessionUserId) {
+            return res.status(403).json({ error: "Forbidden: This grocery list does not belong to you."})
         }
 
         const existingList = await GroceryList.findOne({ mealPlan: mealPlanId});
@@ -79,12 +84,17 @@ export const generateGroceryList = async (req, res) => {
 
 export const regenerateGroceryList = async (req, res) => {
     const { mealPlanId } = req.params;
+    const sessionUserId = req.session?.user?._id;
 
     try {
         const mealPlan = await MealPlan.findById(mealPlanId);
 
-        if (!mealPlan) return res.status(404).json({ error: "Meal plan not found."})
+        if (!mealPlan) return res.status(404).json({ error: "Grocery list not found."})
         
+        if (String(mealPlan.user) !== sessionUserId) {
+            return res.status(403).json({ error: "Forbidden: This grocery list does not belong to you."})
+        }
+
         await GroceryList.updateMany(
             { mealPlan: mealPlanId, archived: false }, 
             {$set: { archived: true, archivedAt: new Date() } }
@@ -106,6 +116,7 @@ export const regenerateGroceryList = async (req, res) => {
 
 export const getGroceryList = async (req, res) => {
     const { mealPlanId } = req.params;
+    const sessionUserId = req.session?.user?._id;
 
     try {
         const groceryList = await GroceryList.findOne({
@@ -115,6 +126,10 @@ export const getGroceryList = async (req, res) => {
 
         if (!groceryList) {
             return res.status(404).json({ message: "No active grocery list found."})
+        }
+
+        if (String(mealPlan.user) !== sessionUserId) {
+            return res.status(403).json({ error: "Forbidden: This meal plan does not belong to you."})
         }
 
         return res.status(200).json({ groceryList });

@@ -5,7 +5,7 @@ export const login = async (req, res) => {
     const { username, password } = req.body.auth;
 
     try {
-        const user = await User.findOne({ "auth.username" : username });
+        const user = await User.findOne({ "auth.username" : username.trim().toLowerCase() });
 
         if (!user) {
             return res.status(401).json({ error: "Invalid credentials"});
@@ -24,7 +24,17 @@ export const login = async (req, res) => {
             },
             role: user.role,
         };
-        res.status(200).json({ message: "Login Succesfully, ", user })
+
+        const safeUser = {
+            _id: user._id,
+            auth: {
+                username: user.auth.username,
+                email: user.auth.email,
+            },
+            role: user.role
+        };
+
+        res.status(200).json({ message: "Login Succesfully, ", user: safeUser })
     } catch (err) {
         console.log("Error: ", err);
         res.status(500).json({ error: "Internal Server Error."})
