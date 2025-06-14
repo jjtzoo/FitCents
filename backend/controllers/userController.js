@@ -7,9 +7,15 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 // Register
 export const createUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body.auth;
-        
+        const username = req.body.auth.username.trim().toLowerCase();
+        const email = req.body.auth.email.trim().toLowerCase();
+        const password = req.body.auth.password;
 
+        const existing = await User.findOne({ "auth.username": username });
+        if (existing) {
+        return res.status(409).json({ error: "Username already exists." });
+        }
+        
         const {
             name,
             weight_kg,
@@ -48,7 +54,7 @@ export const createUser = async (req, res) => {
                 bmr: userBMR,
                 tdee: userCurrentTDEE,
                 targetCalories: userTargetTDEE,
-                targetWeight: userTargetWeight
+                targetWeight_kilo : userTargetWeight
             },
             restrictions: req.body.restrictions || [],
             preferences: req.body.preferences || [],
@@ -206,7 +212,7 @@ export const deleteUser = async (req, res) => {
         }
 
         res.json({message: "Succesfully deleted"})
-    } catch (error) {
+    } catch (err) {
         console.log("Error deleting user:", err);
         res.status(500).json({ error: "Internal Server Error." });
     }
@@ -223,7 +229,7 @@ export const updateMealsPerDay = async (req, res) => {
             return res.status(400).json({ error: "Meals per day must be between 2 and 5."});
         }
 
-        const updatedNumber = await userModel.findByIdAndUpdate(
+        const updatedNumber = await User.findByIdAndUpdate(
             { "auth.username" : username },
             { mealsPerDay },
             { new:true }

@@ -5,8 +5,10 @@ import { heightConverter } from '../utils/heightConverter'
 import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 import { conflictMap } from './RegistrationForm/conflictMap'
 import { preferenceOption } from './RegistrationForm/preferenceOptions'
+import { useNavigate } from 'react-router';
 
 const RegistrationForm = () => {
+    const navigate = useNavigate();
     const [gender, setGender] = useState("");
     const [name , setName] = useState("");
     const [age, setAge] = useState(0);
@@ -23,6 +25,8 @@ const RegistrationForm = () => {
     const [username, setUsername] = useState([]);
     const [password, setPassword] = useState([]);
     const [budget, setBudget] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
     const handleHeight = (e) => {
         const input = e.target.value;
@@ -99,25 +103,56 @@ const RegistrationForm = () => {
                 ? [...preference, value]
                 : preference.filter((preferenceNot) => preferenceNot !== value)
         );
+    };
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setErrorMsg("");
+
+        try {
+            const res = await createItem("users", userForms);
+
+            if(res) {
+                console.log("✅ User registered successfully:", res);
+                navigate("/login")
+            } else {
+                setErrorMsg("Something went wrong. Please try again.");
+            }
+        } catch (err) {
+            console.error("Unexpected error during registration: ", err);
+            setErrorMsg("Unexpected error. Please try again later.")
+        } finally {
+            setLoading(false);
+        }
     }
 
 
     const userForms = {
-        name : name,
-        age: age,
-        gender: gender,
-        weight: weight,
-        activityLevel: activityLevel,
-        weightGoal: weightGoal,
-        restrictions: restrictions,
-        preferences: preferences
+        auth: {
+            username,
+            email,
+            password
+        },
+        biometrics : {
+            name,
+            age,
+            gender,
+            height_cm: height,
+            weight_kg: weight,
+            activityLevel,
+            weightGoal
+        },
+        restrictions,
+        preferences,
+        budget_php: budget
     }
 
     console.log(userForms);
     return (
         
         <>
-            <form>
+            <form onSubmit={handleRegister}>
                 <fieldset>
                     <legend> Registration Form </legend>
                     <div>
@@ -325,6 +360,13 @@ const RegistrationForm = () => {
                         </label>
                     </div>
                 </fieldset>
+
+                <button
+                    type='submit'
+                    disabled={loading}
+                >
+                    { loading ? "Registering..." : "Register"}
+                </button>
             </form>
         </>
   )

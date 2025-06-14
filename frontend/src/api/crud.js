@@ -7,7 +7,7 @@ export const getItem = async (collection, id) => {
         return res.data;
     } catch (err){
         console.error('Get Error', err.message);
-        return null;
+        return { error: err.response?.data || err.message};
     }
 }
 
@@ -17,7 +17,7 @@ export const getAll = async (collection) => {
         return res.data
     } catch (err) {
         console.error('Get All error: ', err.message);
-        return null;
+        return { error: err.response?.data || err.message};
     }
 }
 
@@ -27,7 +27,7 @@ export const createItem = async (collection, data) => {
         return res.data
     } catch (err) {
         console.error('CREATE error: ', err.message);
-        return null;
+        return { error: err.response?.data || err.message};
     }
 };
 
@@ -37,7 +37,7 @@ export const updateItem = async (collection, id, data) => {
         return res.data;
     } catch (err) {
         console.error('UPDATE error: ', err.message);
-        return null
+        return { error: err.response?.data || err.message};
     }
 };
 
@@ -47,7 +47,7 @@ export const patchItem = async (collection, id, data) => {
         return res.data;
     } catch (err) {
         console.error(`PATCH error: `, err.message);
-        return null;
+        return { error: err.response?.data || err.message};
     }
 };
 
@@ -57,6 +57,6 @@ export const deleteItem = async (collection, id) => {
         return res.data;
     } catch (err) {
         console.error(`DELETE error: `, err.message);
-        return null;
+        return { error: err.response?.data || err.message};
     }
 };
