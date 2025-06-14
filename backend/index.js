@@ -8,6 +8,7 @@ import authRoute from "./routes/authRoute.js"
 import recipeRoute from "./routes/recipeRoute.js"
 import mealplanRoute from "./routes/mealPlanRoute.js"
 import groceryRoute from "./routes/groceryListRoute.js"
+import pantryRoute from "./routes/pantryRoute.js"
 
 import dotEnv from "dotenv";
 
@@ -37,6 +38,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/recipes", recipeRoute);
 app.use("/api/meal-plan", mealplanRoute);
 app.use("/api/grocerylist", groceryRoute);
+app.use("/api/pantry", pantryRoute);
 
 
 
