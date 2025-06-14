@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
         weightGoal: { 
             type: String, 
             required: true, 
-            enum: ["extreme", "moderate", "gain"]
+            enum: ["extreme", "moderate", "light"]
         },
         bmi : { type: Number },
         bmr: {type: Number },

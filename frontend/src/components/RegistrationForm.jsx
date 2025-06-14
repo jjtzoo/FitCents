@@ -20,6 +20,9 @@ const RegistrationForm = () => {
     const [restrictions, setRestrictions] = useState([]);
     const [disabledRestrictions, setDisabledRestrictions] = useState([]);
     const [preferences, setPreferences] = useState([]);
+    const [username, setUsername] = useState([]);
+    const [password, setPassword] = useState([]);
+    const [budget, setBudget] = useState([]);
 
     const handleHeight = (e) => {
         const input = e.target.value;
@@ -118,6 +121,40 @@ const RegistrationForm = () => {
                 <fieldset>
                     <legend> Registration Form </legend>
                     <div>
+                        <label htmlFor="username">Username</label>
+                        <input 
+                            type="text" 
+                            id='username'
+                            value={username}
+                            onChange = {(e)=> setUsername(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor='userEmail'>
+                        Email
+                        </label>
+                        <input 
+                            type='email'
+                            id='userEmail'
+                            placeholder='Enter your email address'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type='password'
+                            id='password'
+                            value={password}
+                            onChange = {(e) => setPassword(e.target.value)} 
+                        />
+                    </div>
+
+                    
+                    <div>
                         <label htmlFor='name'>
                         Name
                         </label>
@@ -140,20 +177,6 @@ const RegistrationForm = () => {
                             placeholder='Enter Your Age.'
                             value = {age}
                             onChange={(e) => setAge(Number(e.target.value))}
-                        />
-                    </div>
-
-
-                    <div>
-                        <label htmlFor='userEmail'>
-                        Email
-                        </label>
-                        <input 
-                            type='email'
-                            id='userEmail'
-                            placeholder='Enter your email address'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
 
@@ -183,9 +206,9 @@ const RegistrationForm = () => {
                                 <label>
                                     <input 
                                     type="radio"
-                                    value="unspecified" 
+                                    value="non-binary" 
                                     name='gender'
-                                    checked = {gender === 'unspecified'}
+                                    checked = {gender === 'non-binary'}
                                     onChange={(e) => setGender(e.target.value)}
                                     />
                                 Prefer not to say
@@ -228,11 +251,11 @@ const RegistrationForm = () => {
                         value={activityLevel} 
                         onChange={(e) => setActivityLevel(e.target.value)}
                         >
-                            <option value="sedentary"> little/no exercise </option>
-                            <option value="lightly_active"> 1-3 days/week</option>
-                            <option value="moderately_active">3-5 days/week</option>
-                            <option value="very_active">6-7 days/week</option>
-                            <option value="extra_active">Extra Active - physical job + exercise</option>
+                            <option value="sedentary"> Sedentary, little/no exercise </option>
+                            <option value="light"> Light, 1-3 days/week</option>
+                            <option value="moderate"> Moderate, 3-5 days/week</option>
+                            <option value="active">Active, 6-7 days/week</option>
+                            <option value="veryActive">Very Active - physical job + exercise</option>
                         </select>
                     </div>
                     <div>
@@ -244,8 +267,8 @@ const RegistrationForm = () => {
                         >
                             <option value="">-- Select a Goal --</option>
                             <option value="extreme">Extreme Weight Loss</option>
-                            <option value="high">High Weight Loss</option>
-                            <option value="moderate">Moderate Weight Loss</option>
+                            <option value="moderate">High Weight Loss</option>
+                            <option value="light">Light Weight Loss</option>
                         </select>
                     </div>
 
@@ -290,6 +313,17 @@ const RegistrationForm = () => {
                             </label>
                         ))}
                     </fieldset>
+
+                    <div>
+                        <label htmlFor="budget">
+                            <input 
+                                type="number"
+                                id='budget'
+                                value={budget}
+                                onChange={(e) => setBudget(Number(e.target.value))} 
+                            />
+                        </label>
+                    </div>
                 </fieldset>
             </form>
         </>
