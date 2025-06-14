@@ -6,9 +6,6 @@ const UserContext = createContext();
 const UserProvider = (props) => {
     const [ user, setUser ] = useState(null);
     const [ loading, setLoading ] = useState(null);
-    const [ userGoals, setUserGoals ] = useState(null);
-    const [userSelectedMeals , setUserSelectedMeals] = useState(null);
-    const [userMeals, setUserMeals] = useState(null);
 
     useEffect(() => {
         if (!user?.username) return;
@@ -33,12 +30,6 @@ const UserProvider = (props) => {
         setUser,
         loading,
         setLoading,
-        userGoals,
-        setUserGoals,
-        userSelectedMeals,
-        setUserSelectedMeals,
-        userMeals,
-        setUserMeals
     }
 
     return (
