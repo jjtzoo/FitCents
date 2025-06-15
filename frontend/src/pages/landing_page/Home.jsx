@@ -1,10 +1,9 @@
 import RegistrationForm from "../../components/RegistrationForm"
-
+import HomeComponent from "../../components/HomeComponent"
 const Home = () => {
   return (
     <>
-        <h1>Home</h1>
-        <RegistrationForm />
+        <HomeComponent />
     </>
   )
 }

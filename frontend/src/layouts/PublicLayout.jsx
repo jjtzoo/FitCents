@@ -1,13 +1,14 @@
 import { Outlet } from "react-router"
+import PublicNav from "../components/PublicNav"
 
 const PublicLayout = () => {
 
 
     return (
-        <>
-            <h1>Public Layout</h1>
+        <div className="min-h-screen bg-amber-50">
+            <PublicNav />
             <Outlet />
-        </>
+        </div>
     )
 }
 
