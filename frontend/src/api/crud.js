@@ -1,5 +1,5 @@
 import axios from "axios";
-const URL = import.meta.env.VITE_API_BASE_URL;
+const URL = "http://localhost:4000"
 
 export const getItem = async (collection, id) => {
     try {
@@ -21,9 +21,9 @@ export const getAll = async (collection) => {
     }
 }
 
-export const createItem = async (collection, data) => {
+export const createItem = async (data) => {
     try {
-        const res = await axios.post(`${URL}/api/${collection}`, data);
+        const res = await axios.post(`${URL}/api/users/register`, data);
         return res.data
     } catch (err) {
         console.error('CREATE error: ', err.message);

@@ -7,7 +7,9 @@ const PublicLayout = () => {
     return (
         <div className="min-h-screen bg-amber-50">
             <PublicNav />
-            <Outlet />
+            <main className="pt-25 px-4">
+                <Outlet />
+            </main>
         </div>
     )
 }

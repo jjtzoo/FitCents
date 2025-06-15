@@ -1,9 +1,9 @@
 import { Outlet } from "react-router"
-
+import RegistrationForm from "../../components/RegistrationForm"
 const Register = () => {
     return (
         <>
-            <h1>Register</h1>
+            <RegistrationForm />
             <Outlet />
         </>
     )

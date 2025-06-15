@@ -6,25 +6,27 @@ import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 import { conflictMap } from './RegistrationForm/conflictMap'
 import { preferenceOption } from './RegistrationForm/preferenceOptions'
 import { useNavigate } from 'react-router';
+import { motion } from 'framer-motion'
+import axios from 'axios'
 
 const RegistrationForm = () => {
     const navigate = useNavigate();
     const [gender, setGender] = useState("");
     const [name , setName] = useState("");
-    const [age, setAge] = useState(0);
+    const [age, setAge] = useState("");
     const [email, setEmail] = useState("");
-    const [weight, setWeight] = useState(0);
+    const [weight, setWeight] = useState("");
     const [activityLevel, setActivityLevel] = useState("");
-    const [height, setHeight] = useState(0);
+    const [height, setHeight] = useState("");
     const [rawHeight, setRawHeight] = useState('');
     const [weightGoal, setWeightGoal] = useState('');
     const [error, setError] = useState(null);
     const [restrictions, setRestrictions] = useState([]);
     const [disabledRestrictions, setDisabledRestrictions] = useState([]);
     const [preferences, setPreferences] = useState([]);
-    const [username, setUsername] = useState([]);
-    const [password, setPassword] = useState([]);
-    const [budget, setBudget] = useState([]);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [budget, setBudget] = useState("");
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -106,26 +108,25 @@ const RegistrationForm = () => {
     };
 
     const handleRegister = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrorMsg("");
+        e.preventDefault(); // Prevents full page reload
+
+        // Optional: Basic validation
+        if (!username || !email || !password) {
+        alert("All fields are required.");
+        return;
+        }
 
         try {
-            const res = await createItem("users", userForms);
+        const response = await axios.post('http://localhost:4000/api/users/register', userForms);
 
-            if(res) {
-                console.log("✅ User registered successfully:", res);
-                navigate("/login")
-            } else {
-                setErrorMsg("Something went wrong. Please try again.");
-            }
+        console.log("✅ Registered:", response.data);
+        alert("Registration successful!");
         } catch (err) {
-            console.error("Unexpected error during registration: ", err);
-            setErrorMsg("Unexpected error. Please try again later.")
-        } finally {
-            setLoading(false);
+        console.error("❌ Registration failed:", err.response?.data || err.message);
+        const message = err.response?.data?.error?.message || "Something went wrong.";
+        alert(`Registration failed: ${message}`);
         }
-    }
+    };
 
 
     const userForms = {
@@ -145,16 +146,23 @@ const RegistrationForm = () => {
         },
         restrictions,
         preferences,
-        budget_php: budget
+        budget_php: Number(budget)
     }
 
     console.log(userForms);
     return (
         
-        <>
-            <form onSubmit={handleRegister}>
-                <fieldset>
-                    <legend> Registration Form </legend>
+        
+        <motion.form 
+            onSubmit={handleRegister} 
+            className='registration-form'
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <fieldset className='registration-fieldset'>
+                <legend className='registration-legend'> Registration Form </legend>
+                <section className='user-auth-section'>
                     <div>
                         <label htmlFor="username">Username</label>
                         <input 
@@ -187,8 +195,10 @@ const RegistrationForm = () => {
                             onChange = {(e) => setPassword(e.target.value)} 
                         />
                     </div>
+                </section>
 
-                    
+                
+                <section className='user-biometrics-section'>
                     <div>
                         <label htmlFor='name'>
                         Name
@@ -214,43 +224,6 @@ const RegistrationForm = () => {
                             onChange={(e) => setAge(Number(e.target.value))}
                         />
                     </div>
-
-                    <fieldset>
-                        <legend>
-                            <div>
-                                <label>
-                                    <input 
-                                    type='radio'
-                                    value='male'
-                                    name='gender'
-                                    checked={gender === 'male'}
-                                    onChange={(e) => setGender(e.target.value)} 
-                                    />
-                                    Male
-                                </label>
-                                <label>
-                                    <input 
-                                    type="radio"
-                                    value="female"
-                                    name='gender'
-                                    checked={gender === 'female'}
-                                    onChange={(e) => setGender(e.target.value)} 
-                                    />
-                                    Female
-                                </label>
-                                <label>
-                                    <input 
-                                    type="radio"
-                                    value="non-binary" 
-                                    name='gender'
-                                    checked = {gender === 'non-binary'}
-                                    onChange={(e) => setGender(e.target.value)}
-                                    />
-                                Prefer not to say
-                                </label>
-                            </div>
-                        </legend>
-                    </fieldset>
 
                     <div>
                         <label htmlFor="weight">Weight </label>
@@ -279,6 +252,8 @@ const RegistrationForm = () => {
                         <p>Converted to {height} cm</p>
                     </div>
 
+                    
+
                     <div>
                         <label htmlFor="activity-level"> Activity Level:</label>
                         <select 
@@ -286,6 +261,7 @@ const RegistrationForm = () => {
                         value={activityLevel} 
                         onChange={(e) => setActivityLevel(e.target.value)}
                         >
+                            <option value="">-- Select activity level --</option>
                             <option value="sedentary"> Sedentary, little/no exercise </option>
                             <option value="light"> Light, 1-3 days/week</option>
                             <option value="moderate"> Moderate, 3-5 days/week</option>
@@ -293,83 +269,132 @@ const RegistrationForm = () => {
                             <option value="veryActive">Very Active - physical job + exercise</option>
                         </select>
                     </div>
-                    <div>
-                        <label htmlFor="weightGoal">Select Your Weight Loss Goal</label>
-                        <select
-                            id="weightGoal"
-                            value={weightGoal}
-                            onChange={(e) => setWeightGoal(e.target.value)}
-                        >
-                            <option value="">-- Select a Goal --</option>
-                            <option value="extreme">Extreme Weight Loss</option>
-                            <option value="moderate">High Weight Loss</option>
-                            <option value="light">Light Weight Loss</option>
-                        </select>
-                    </div>
+                </section>
 
-                    <fieldset>
-                        <legend>Dietary Restrictions</legend>
-                        <label>
-                            <input 
-                                type="checkbox"
-                                value="none"
-                                checked={restrictions.length === 0}
-                                onChange={handleRestrictions} 
-                            />
-                            NoRestrictions
+                <fieldset className="registration-fieldset">
+                    <legend className="registration-legend">Gender</legend>
+                    <div className="gender-radio-group">
+                        <label htmlFor="male" className="gender-radio-label">
+                        <input
+                            type="radio"
+                            id="male"
+                            value="male"
+                            name="gender"
+                            checked={gender === 'male'}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="gender-radio-input"
+                        />
+                        Male
                         </label>
-                        {restrictionOptions.map((restriction) => (
-                            <label key={restriction}>
-                                <input 
-                                    type="checkbox" 
-                                    name="restrictions"
-                                    value={restriction}
-                                    checked={restrictions.includes(restriction)}
-                                    disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
-                                    onChange={handleRestrictions}
-                                />
-                                {restriction.replace(/_/g, ' ')}
-                            </label>
-                        ))}
-                    </fieldset>
-                    <fieldset>
-                        <legend>Cuisine Preferences</legend>
-                        {preferenceOption.map((cuisine) => (
-                            <label key={cuisine} htmlFor={cuisine}>
-                                <input 
-                                    type="checkbox"
-                                    name="preferences"
-                                    id={cuisine}
-                                    value={cuisine}
-                                    checked={preferences.includes(cuisine)}
-                                    onChange={handlePreferences}
-                                />
-                                {cuisine}
-                            </label>
-                        ))}
-                    </fieldset>
 
-                    <div>
-                        <label htmlFor="budget">
-                            <input 
-                                type="number"
-                                id='budget'
-                                value={budget}
-                                onChange={(e) => setBudget(Number(e.target.value))} 
-                            />
+                        <label htmlFor="female" className="gender-radio-label">
+                        <input
+                            type="radio"
+                            id="female"
+                            value="female"
+                            name="gender"
+                            checked={gender === 'female'}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="gender-radio-input"
+                        />
+                        Female
+                        </label>
+
+                        <label htmlFor="non-binary" className="gender-radio-label">
+                        <input
+                            type="radio"
+                            id="non-binary"
+                            value="non-binary"
+                            name="gender"
+                            checked={gender === 'non-binary'}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="gender-radio-input"
+                        />
+                        Prefer not to say
                         </label>
                     </div>
                 </fieldset>
+                <div>
+                    <label htmlFor="weightGoal">Select Your Weight Loss Goal</label>
+                    <select
+                        id="weightGoal"
+                        value={weightGoal}
+                        onChange={(e) => setWeightGoal(e.target.value)}
+                    >
+                        <option value="">-- Select a Goal --</option>
+                        <option value="extreme">Extreme Weight Loss</option>
+                        <option value="moderate">High Weight Loss</option>
+                        <option value="light">Light Weight Loss</option>
+                    </select>
+                </div>
 
-                <button
-                    type='submit'
-                    disabled={loading}
-                >
-                    { loading ? "Registering..." : "Register"}
-                </button>
-            </form>
-        </>
-  )
+                <fieldset>
+                    <legend>Dietary Restrictions</legend>
+                    <label>
+                        <input 
+                            type="checkbox"
+                            value="none"
+                            checked={restrictions.length === 0}
+                            onChange={handleRestrictions} 
+                        />
+                        NoRestrictions
+                    </label>
+                    {restrictionOptions.map((restriction) => (
+                        <label key={restriction}>
+                            <input 
+                                type="checkbox" 
+                                name="restrictions"
+                                value={restriction}
+                                checked={restrictions.includes(restriction)}
+                                disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
+                                onChange={handleRestrictions}
+                            />
+                            {restriction.replace(/_/g, ' ')}
+                        </label>
+                    ))}
+                </fieldset>
+                <fieldset>
+                    <legend>Cuisine Preferences</legend>
+                    {preferenceOption.map((cuisine) => (
+                        <label key={cuisine} htmlFor={cuisine}>
+                            <input 
+                                type="checkbox"
+                                name="preferences"
+                                id={cuisine}
+                                value={cuisine}
+                                checked={preferences.includes(cuisine)}
+                                onChange={handlePreferences}
+                            />
+                            {cuisine}
+                        </label>
+                    ))}
+                </fieldset>
+
+                <div>
+                    <label htmlFor="budget">
+                        Budget Per Week Php
+                    </label>
+                    <input
+                        type="number"
+                        id="budget"
+                        value={budget === null ? "" : budget}
+                        onChange={(e) => {
+                        const val = e.target.value;
+                        setBudget(val === "" ? null : Number(val));
+                        }}
+                    />
+                </div>
+            </fieldset>
+
+            <button
+                type='submit'
+                disabled={loading}
+            >
+                { loading ? "Registering..." : "Register"}
+            </button>
+        </motion.form>
+        
+    )
 }
 
 export default RegistrationForm
