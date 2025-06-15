@@ -6,6 +6,7 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 
 // Register
 export const createUser = async (req, res) => {
+    console.log("Incoming registration", JSON.stringify(req.body, null, 2));
     try {
         const username = req.body.auth.username.trim().toLowerCase();
         const email = req.body.auth.email.trim().toLowerCase();
@@ -15,9 +16,15 @@ export const createUser = async (req, res) => {
             return res.status(400).json({ error: "Missing Required registration fields."})
         }
 
-        const existing = await User.findOne({ "auth.username": username });
+        const existing = await User.findOne({ 
+            $or : [
+                { "auth.username": username },
+                { "auth.email": email } 
+            ]
+        });
         if (existing) {
-        return res.status(409).json({ error: "Username already exists." });
+            const duplicatedField = existingUser.auth.email === email ? "Email" : "Username";
+            return res.status(409).json({ error: `${duplicatedField} already exists. ` });
         }
         
         const {
@@ -67,7 +74,7 @@ export const createUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).json(userUpdatedInfo);
+        res.status(201).json(newUser);
 
     } catch (err) {
         console.log("Creation Error: ", err);

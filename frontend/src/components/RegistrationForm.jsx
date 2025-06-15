@@ -108,9 +108,8 @@ const RegistrationForm = () => {
     };
 
     const handleRegister = async (e) => {
-        e.preventDefault(); // Prevents full page reload
+        e.preventDefault(); 
 
-        // Optional: Basic validation
         if (!username || !email || !password) {
         alert("All fields are required.");
         return;
@@ -121,6 +120,7 @@ const RegistrationForm = () => {
 
         console.log("✅ Registered:", response.data);
         alert("Registration successful!");
+        navigate("/login")
         } catch (err) {
         console.error("❌ Registration failed:", err.response?.data || err.message);
         const message = err.response?.data?.error?.message || "Something went wrong.";

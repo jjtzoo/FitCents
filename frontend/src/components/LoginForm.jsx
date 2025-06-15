@@ -20,7 +20,7 @@ const LoginForm = () => {
         setErrorMsg("");
 
         try {
-            const res = await axios.post("/api/auth/login", {
+            const res = await axios.post("http://localhost:4000/api/auth/login", {
                 auth: {
                     username,
                     password,
