@@ -11,6 +11,8 @@ const LogoutButton = () => {
         try {
             setLoading(true);
             await axios.post("api/auth/logout");
+            localStorage.clear();
+            sessionStorage.clear();
             setUser(null);
             navigate("/login");
         } catch (error) {
