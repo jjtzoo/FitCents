@@ -1,6 +1,5 @@
 import { Outlet } from "react-router"
 import PublicNav from "../components/PublicNav"
-import AppHeader from "../components/AppHeader"
 
 const PublicLayout = () => {
 
