@@ -33,7 +33,7 @@ app.use(session({
     }
 }))
 
-app.use("/api/user", userRoute);
+app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/recipes", recipeRoute);
 app.use("/api/meal-plan", mealplanRoute);

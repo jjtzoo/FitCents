@@ -11,6 +11,10 @@ export const createUser = async (req, res) => {
         const email = req.body.auth.email.trim().toLowerCase();
         const password = req.body.auth.password;
 
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: "Missing Required registration fields."})
+        }
+
         const existing = await User.findOne({ "auth.username": username });
         if (existing) {
         return res.status(409).json({ error: "Username already exists." });
@@ -35,14 +39,14 @@ export const createUser = async (req, res) => {
         const userTargetBMI = targetBMI(userBMI, age)
         const userTargetWeight = Math.round(targetWeight(userTargetBMI, height_cm));
 
-        const userUpdatedInfo = new User ({
-            auth : {
+        const newUser = new User({
+            auth: {
                 username,
                 email,
-                passwordHash
+                passwordHash,
             },
             role: req.body.role || "regular",
-            biometrics : {
+            biometrics: {
                 name,
                 age,
                 gender,
@@ -54,7 +58,7 @@ export const createUser = async (req, res) => {
                 bmr: userBMR,
                 tdee: userCurrentTDEE,
                 targetCalories: userTargetTDEE,
-                targetWeight_kilo : userTargetWeight
+                targetWeight_kilo: userTargetWeight
             },
             restrictions: req.body.restrictions || [],
             preferences: req.body.preferences || [],
@@ -62,7 +66,7 @@ export const createUser = async (req, res) => {
             budget_php: req.body.budget_php
         });
 
-        await userUpdatedInfo.save();
+        await newUser.save();
         res.status(201).json(userUpdatedInfo);
 
     } catch (err) {

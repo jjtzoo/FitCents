@@ -10,7 +10,7 @@ const ingredientsEntrySchema = new mongoose.Schema({
     totalCost: { type: Number }
 }, { _id: false });
 
-const groceryListSchema = new mongoose.model({
+const groceryListSchema = new mongoose.Schema({
     user : {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

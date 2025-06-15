@@ -1,7 +1,7 @@
 import express from "express";
-import { buildPantryFromGroceryList, deductFromPantryController, getPantry, manuallyUpdatePantryItem, resetPantryController, updatePantryWithNewGroceryList } from "../controllers/pantryController";
-import { isAuthenticated } from "../middleware/authMiddleware";
-import { requireRole } from "../middleware/roleMiddleware";
+import { buildPantryFromGroceryList, deductFromPantryController, getPantry, manuallyUpdatePantryItem, resetPantryController, updatePantryWithNewGroceryList } from "../controllers/pantryController.js";
+import { isAuthenticated } from "../middleware/authMiddleware.js";
+import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
