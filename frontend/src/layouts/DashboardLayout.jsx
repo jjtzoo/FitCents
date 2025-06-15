@@ -1,14 +1,12 @@
 import { Outlet } from "react-router"
 
-const PublicLayout = () => {
-
-
+const DashboardLayout = () => {
     return (
         <>
-            <h1>Public Layout</h1>
+            <h1>Dashboard Layout</h1>
             <Outlet />
         </>
     )
 }
 
-export default PublicLayout
+export default DashboardLayout

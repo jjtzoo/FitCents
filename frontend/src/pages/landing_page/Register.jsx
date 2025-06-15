@@ -1,14 +1,12 @@
 import { Outlet } from "react-router"
 
-const PublicLayout = () => {
-
-
+const Register = () => {
     return (
         <>
-            <h1>Public Layout</h1>
+            <h1>Register</h1>
             <Outlet />
         </>
     )
 }
 
-export default PublicLayout
+export default Register

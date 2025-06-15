@@ -3,21 +3,25 @@ import { createBrowserRouter } from "react-router";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout";
-import RegularLayout from "./layouts/RegularLayout";
-import PremiumLayout from "./layouts/PremiumLayout";
-import DeveloperLayout from "./layouts/DeveloperLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 
-// Pages
+// Pages - Public
 import Home from "./pages/landing_page/Home";
-import Login from "./pages/landing_page/Login";
-import Register from "./pages/dashboard/Register"
 import AboutUs from "./pages/landing_page/AboutUs";
-import AllRecipes from "./pages/dashboard/AllRecipes";
-import AutoMealPlan from "./pages/dashboard/AutoMealPlan";
-import PickMealPlan from "./pages/dashboard/PickMealPlan";
-import MagicRecipe from "./pages/dashboard/MagicRecipe";
-import RealTimePantry from "./pages/dashboard/RealTimePantry";
+import Login from "./pages/landing_page/Login"
+import Register from "./pages/landing_page/Register";
+
+// Pages - Shared/Dashboard
 import UserData from "./pages/dashboard/UserData";
+import AutoMealPlan from "./pages/dashboard/AutoMealPlan";
+
+// Premium/Dev Only
+import PickMealPlan from "./pages/dashboard/PickMealPlan";
+import RealTimePantry from "./pages/dashboard/RealTimePantry";
+import MagicRecipe from "./pages/dashboard/MagicRecipe";
+
+// Dev Only
+import AllRecipes from "./pages/dashboard/AllRecipes";
 import Analytics from "./pages/dashboard/Analytics";
 
 const router = createBrowserRouter([
@@ -44,79 +48,36 @@ const router = createBrowserRouter([
         ]
     },
     {
-        path: '/regular',
-        element: <RegularLayout />,
+        path: '/dashboard',
+        element: <DashboardLayout />,
         children : [
             {
-                path : 'user',
-                element : <UserData />
+                path: "user",
+                element: <UserData /> 
             },
             {
-                path : 'automealplan',
-                element : <AutoMealPlan />
-            },
-        ]
-    },
-    {
-        path: '/premium', 
-        element: <PremiumLayout />,
-        children : [
-            {
-                path: 'user',
-                element : <UserData />
-            },
-            {
-                path : 'automealplan',
+                path: "automealplan",
                 element: <AutoMealPlan />
             },
+
+            // Premium Features
             {
-                path: 'pickmealplan',
-                element: <PickMealPlan />
+                path: "pickmealplan", element: <PickMealPlan />
             },
-            {
-                path: 'inventory',
-                element: <RealTimePantry />
+            {   
+                path: "inventory", element: <RealTimePantry />
             },
-            {
-                path: 'magicdish',
-                element : <MagicRecipe />
+            {    
+                path: "magicdish", element: <MagicRecipe />
+            },
+            { 
+                path: "allrecipes", element: <AllRecipes />
+            },
+            { 
+                path: "analytics", element: <Analytics />
             }
         ]
-    },
-    {
-        path: 'devs',
-        element : <DeveloperLayout />,
-        children : [
-            {
-                path: 'user',
-                element : <UserData />
-            },
-            {
-                path : 'automealplan',
-                element: <AutoMealPlan />
-            },
-            {
-                path: 'pickmealplan',
-                element: <PickMealPlan />
-            },
-            {
-                path: 'inventory',
-                element: <RealTimePantry />
-            },
-            {
-                path: 'magicdish',
-                element : <MagicRecipe />
-            },
-            {
-                path: 'allrecipes',
-                element : <AllRecipes />
-            },
-            {
-                path: 'analytics',
-                element : <Analytics />
-            }
-        ]
-    },
+    }     
 ]);
 
 export default router;
