@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
 
-const Login = () => {
+const LoginForm = () => {
     const navigate = useNavigate();
     const { setUser } = useUserContext();
 
@@ -101,4 +101,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+export default LoginForm;

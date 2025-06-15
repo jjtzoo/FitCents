@@ -1,9 +1,9 @@
-import React from 'react'
+import { Link, NavLink } from "react-router"
 
 const AboutUs = () => {
   return (
     <>
-         <h1>About Us.</h1>
+      <h1>About Us.</h1>
     </>
   ) 
 }
