@@ -138,58 +138,45 @@ export const generateWeeklyMealPlan = async (req, res) => {
 
 export const toggleMealCompletion = async (req, res) => {
     const { planId } = req.params;
-    const { day, recipeId } = req.body;
+    const { day, index } = req.body;
 
     try {
-        const mealPlan = await MealPlan.findById(planId)
-        if (!mealPlan) {
-            return res.status(404).json({ error: "Meal plan not found."});
-        }
+        const mealPlan = await MealPlan.findById(planId);
+        if (!mealPlan) return res.status(404).json({ error: "Meal plan not found." });
 
-        let targetEntry = null;
+        const dayEntry = mealPlan.meals.find(d => d.day === day);
+        if (!dayEntry) return res.status(404).json({ error: "Day not found in meal plan." });
 
-        for (const dayEntry of mealPlan.meals) {
-            if (dayEntry.day === day) {
-                targetEntry = dayEntry.meal.find(recipes => recipes.recipe.toString() === recipeId);
-                break;
-            }
-        }
+        if (index < 0 || index >= dayEntry.meal.length)
+        return res.status(400).json({ error: "Invalid meal index." });
 
-        if (!targetEntry) {
-            return res.status(404).json({ error: "Recipe not found in specified day."})
-        }
-
-        targetEntry.completed = !targetEntry.completed;
-
+        dayEntry.meal[index].completed = !dayEntry.meal[index].completed;
         await mealPlan.save();
 
         const allCompleted = mealPlan.meals.every(day =>
-            day.meal.every(m => m.completed === true)
-        )
+        day.meal.every(m => m.completed === true)
+        );
 
         if (allCompleted && mealPlan.active) {
-            mealPlan.active = false;
-            mealPlan.archivedAt = new Date();
-            await mealPlan.save();
-
-            return res.status(200).json({
-                message: "Meal marked completed. All meals are now completed. Plan archived.",
-                planArchived: true,
-                updatedMealPlan: mealPlan
-            });
+        mealPlan.active = false;
+        mealPlan.archivedAt = new Date();
+        await mealPlan.save();
+        return res.status(200).json({
+            message: "All meals completed. Plan archived.",
+            planArchived: true,
+            updatedMealPlan: mealPlan,
+        });
         }
 
-        return res.status(200).json({
-            message: "Meal completion toggled.",
-            planArchived: false,
-            updatedMealPlan: mealPlan
+        res.status(200).json({
+        message: "Meal completion toggled.",
+        planArchived: false,
+        updatedMealPlan: mealPlan,
         });
-        
     } catch (err) {
-        console.error("Error toggling meal completion: ", err);
-        res.status(500).json({ error: "Server error while updating meal completion"})
+        console.error("Error toggling meal completion:", err);
+        res.status(500).json({ error: "Server error while updating meal completion" });
     }
-
 };
 
 export const getActiveMealPlan = async (req, res) => {

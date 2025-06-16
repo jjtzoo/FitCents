@@ -314,12 +314,15 @@ const RegistrationForm = () => {
                         </label>
                     </div>
                 </fieldset>
-                <div>
-                    <label htmlFor="weightGoal">Select Your Weight Loss Goal</label>
+                <div className="space-y-2">
+                    <label htmlFor="weightGoal" className="block text-sm font-medium text-gray-700">
+                        Select Your Weight Loss Goal
+                    </label>
                     <select
                         id="weightGoal"
                         value={weightGoal}
                         onChange={(e) => setWeightGoal(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
                     >
                         <option value="">-- Select a Goal --</option>
                         <option value="extreme">Extreme Weight Loss</option>
@@ -328,51 +331,69 @@ const RegistrationForm = () => {
                     </select>
                 </div>
 
-                <fieldset>
-                    <legend>Dietary Restrictions</legend>
-                    <label>
-                        <input 
-                            type="checkbox"
-                            value="none"
-                            checked={restrictions.length === 0}
-                            onChange={handleRestrictions} 
+                <fieldset className="border border-amber-200 rounded-xl p-4 space-y-4">
+                    <legend className="text-lg font-semibold text-amber-700 px-2">Dietary Restrictions</legend>
+
+                    <div className="flex items-center space-x-2">
+                        <input
+                        type="checkbox"
+                        value="none"
+                        checked={restrictions.length === 0}
+                        onChange={handleRestrictions}
+                        id="no-restrictions"
+                        className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
                         />
-                        NoRestrictions
-                    </label>
-                    {restrictionOptions.map((restriction) => (
-                        <label key={restriction}>
-                            <input 
-                                type="checkbox" 
-                                name="restrictions"
-                                value={restriction}
-                                checked={restrictions.includes(restriction)}
-                                disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
-                                onChange={handleRestrictions}
+                        <label htmlFor="no-restrictions" className="text-sm font-medium text-gray-700">
+                        No Restrictions
+                        </label>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {restrictionOptions.map((restriction) => (
+                        <div key={restriction} className="flex items-center space-x-2">
+                            <input
+                            type="checkbox"
+                            name="restrictions"
+                            value={restriction}
+                            checked={restrictions.includes(restriction)}
+                            disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
+                            onChange={handleRestrictions}
+                            id={restriction}
+                            className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 disabled:opacity-40"
                             />
+                            <label htmlFor={restriction} className="text-sm font-medium text-gray-700 capitalize">
                             {restriction.replace(/_/g, ' ')}
-                        </label>
-                    ))}
-                </fieldset>
-                <fieldset>
-                    <legend>Cuisine Preferences</legend>
-                    {preferenceOption.map((cuisine) => (
-                        <label key={cuisine} htmlFor={cuisine}>
-                            <input 
-                                type="checkbox"
-                                name="preferences"
-                                id={cuisine}
-                                value={cuisine}
-                                checked={preferences.includes(cuisine)}
-                                onChange={handlePreferences}
+                            </label>
+                        </div>
+                        ))}
+                    </div>
+                    </fieldset>
+                <fieldset className="border border-teal-200 rounded-xl p-4 space-y-4">
+                    <legend className="text-lg font-semibold text-teal-700 px-2">Cuisine Preferences</legend>
+
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {preferenceOption.map((cuisine) => (
+                        <div key={cuisine} className="flex items-center space-x-2">
+                            <input
+                            type="checkbox"
+                            name="preferences"
+                            id={cuisine}
+                            value={cuisine}
+                            checked={preferences.includes(cuisine)}
+                            onChange={handlePreferences}
+                            className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
                             />
+                            <label htmlFor={cuisine} className="text-sm font-medium text-gray-700">
                             {cuisine}
-                        </label>
-                    ))}
+                            </label>
+                        </div>
+                        ))}
+                    </div>
                 </fieldset>
 
-                <div>
-                    <label htmlFor="budget">
-                        Budget Per Week Php
+                <div className="space-y-1">
+                    <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
+                        Budget Per Week (₱)
                     </label>
                     <input
                         type="number"
@@ -382,15 +403,19 @@ const RegistrationForm = () => {
                         const val = e.target.value;
                         setBudget(val === "" ? null : Number(val));
                         }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="Enter amount in Philippine Peso"
+                        min="0"
                     />
                 </div>
             </fieldset>
 
             <button
-                type='submit'
+                type="submit"
                 disabled={loading}
+                className="w-full px-4 py-2 bg-amber-500 text-white font-semibold rounded-md shadow-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
             >
-                { loading ? "Registering..." : "Register"}
+                {loading ? "Registering..." : "Register"}
             </button>
         </motion.form>
         
