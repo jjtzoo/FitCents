@@ -70,6 +70,8 @@ const router = createBrowserRouter([
             {    
                 path: "magicdish", element: <MagicRecipe />
             },
+
+            // Developer
             { 
                 path: "allrecipes", element: <AllRecipes />
             },

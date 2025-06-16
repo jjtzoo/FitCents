@@ -1,6 +1,5 @@
 import { MdSportsGymnastics } from "react-icons/md";
 import { FaCentSign } from "react-icons/fa6";
-import { Link } from "react-router";
 import { motion } from "framer-motion"
 
 const AppHeader = () => {
