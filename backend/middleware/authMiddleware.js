@@ -1,4 +1,5 @@
 export const isAuthenticated = (req, res, next) => {
+    console.log("SESSION: ", req.session);
     if (req.session && req.session.user && req.session.user._id) {
         return next();
     }
@@ -18,9 +19,11 @@ export const isAuthorized = (req, res, next) => {
         return next();
     }
 
-    if(sessionUser.auth?.username !== targetUsername) {
-        return res.status(403).json({ error: "Forbidden: You are not the owner of this resource."})
+    if (targetUsername) {
+        if (sessionUser.auth?.username !== targetUsername) {
+            return res.status(403).json({ error: "Forbidden: You are not the owner of this resource." });
+        }
     }
 
-    next();
+    return next();
 }

@@ -24,8 +24,11 @@ const LoginForm = () => {
                 auth: {
                     username,
                     password,
-                },
-            });
+                }, 
+            }, {
+                withCredentials: true
+            }
+        );
 
             const user = res.data.user;
             console.log("✅ Login success: ", user);
