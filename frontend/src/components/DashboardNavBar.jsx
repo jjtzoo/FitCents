@@ -13,6 +13,7 @@ const DashboardNavBar = () => {
   const allLinks = [
     { label: "My Info", to: "/dashboard/user", roles: ["regular", "premium", "developer"] },
     { label: "Auto Meal Plan", to: "/dashboard/automealplan", roles: ["regular", "premium", "developer"] },
+    // { label: "Grocery List", to:"/dashboard/grocery-list", roles: ["regular", "premium", "developer"] },
     { label: "Pick Meal Plan", to: "/dashboard/pickmealplan", roles: ["premium", "developer"] },
     { label: "Pantry Tracker", to: "/dashboard/inventory", roles: ["premium", "developer"] },
     { label: "Magic Dish", to: "/dashboard/magicdish", roles: ["premium", "developer"] },

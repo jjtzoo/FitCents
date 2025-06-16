@@ -25,7 +25,7 @@ const groceryListSchema = new mongoose.Schema({
     ingredients: [ingredientsEntrySchema],
     totalItems: Number,
     totalEstimatedCost: Number,
-    genereratedAt: {
+    generatedAt: {
         type: Date,
         default: Date.now
     },

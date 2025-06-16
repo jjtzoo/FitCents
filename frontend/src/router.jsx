@@ -59,7 +59,6 @@ const router = createBrowserRouter([
                 path: "automealplan",
                 element: <AutoMealPlan />
             },
-
             // Premium Features
             {
                 path: "pickmealplan", element: <PickMealPlan />

@@ -184,7 +184,11 @@ export const getActiveMealPlan = async (req, res) => {
     try {
         const userId = req.session.user?._id;
 
-        const activePlan = await MealPlan.findOne({ user: userId, active: true });
+        if (!userId) {
+            return res.status(401).json({ error: "Unauthorized"})
+        }
+        
+        const activePlan = await MealPlan.findOne({ user: userId, archived: false });
 
         if (!activePlan) {
             return res.status(404).json({ message: "No active meal plan found." });
