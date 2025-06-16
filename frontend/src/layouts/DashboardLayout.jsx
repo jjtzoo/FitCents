@@ -4,7 +4,9 @@ const DashboardLayout = () => {
     return (
         <>
             <DashboardNavBar />
-            <Outlet />
+            <div className="mt-4 px-4">
+                <Outlet />
+            </div>
         </>
     )
 }
