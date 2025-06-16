@@ -1,9 +1,9 @@
 import { Outlet } from "react-router"
-
+import DashboardNavBar from "../components/DashboardNavBar"
 const DashboardLayout = () => {
     return (
         <>
-            <h1>Dashboard Layout</h1>
+            <DashboardNavBar />
             <Outlet />
         </>
     )
