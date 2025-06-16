@@ -6,24 +6,23 @@ const UserContext = createContext();
 const UserProvider = (props) => {
     const [ user, setUser ] = useState(null);
     const [ loading, setLoading ] = useState(null);
+    const [ error, setError] = useState(null);
 
     useEffect(() => {
-        if (!user?.username) return;
-
-        const fetchUserData = async () => {
-            setLoading(true);
-            try {
-                const res = await axios.get(`http://localhost:4000/api/userData/${user.username}`)
-                setUser(res.data)
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
+    const fetchSession = async () => {
+        try {
+            const { data } = await axios.get("/api/user/profile");
+            setUser(data);
+        } catch (err) {
+            console.error("User session fetch failed:", err);
+            setUser(null);
+        } finally {
+            setLoading(false);
         }
+        };
 
-        fetchUserData();
-    }, [user?.username])
+        fetchSession();
+    }, []);
 
     const myObj = {
         user,

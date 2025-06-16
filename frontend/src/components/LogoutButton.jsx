@@ -11,7 +11,7 @@ const LogoutButton = () => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await axios.post("/api/auth/logout");
+      await axios.post("http://localhost:4000/api/auth/logout");
       localStorage.clear();
       sessionStorage.clear();
       setUser(null);

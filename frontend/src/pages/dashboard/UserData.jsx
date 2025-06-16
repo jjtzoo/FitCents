@@ -1,10 +1,9 @@
-import React from 'react'
+import UserInfo from "../../components/UserInfo"
 
 const UserData = () => {
   return (
     <>
-        <h1>User's information.</h1>
-        <h1>User's goals.</h1> 
+        <UserInfo />
     </>
   )
 }
