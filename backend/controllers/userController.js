@@ -106,7 +106,7 @@ export const list = async(req, res) => {
 // Read
 export const read = async(req, res) => {
     try {
-        const username = req.params.username;
+        const username = req.session.user?.auth?.username;
 
         if(!username) {
             return res.status(400).json({ error: "Username is required"});
