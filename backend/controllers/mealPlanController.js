@@ -112,7 +112,8 @@ export const generateWeeklyMealPlan = async (req, res) => {
                     caloriesPerServing: m.caloriesPerServing,
                     totalMealCost: m.totalMealCost,
                     label: m.label,
-                    completed: false
+                    completed: false,
+                    ingredients: m.ingredients
                 }))
             })),
             averageCaloriesPerServing,

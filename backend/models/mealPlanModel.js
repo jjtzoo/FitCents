@@ -22,7 +22,22 @@ const mealEntrySchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
+    },
+    ingredients: [
+    {
+        quantity: Number,
+        unit: String,
+        pricePerUnit: Number,
+        calories: Number,
+        cost: Number,
+        ingredient: String,
+        label: String,
+        category: {
+            type: String,
+            enum: ["main", "condiments"]
+        }
     }
+]
 }, { _id: false})
 
 const dailyMealSchema = new mongoose.Schema({
