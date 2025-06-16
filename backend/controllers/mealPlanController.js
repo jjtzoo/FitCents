@@ -4,20 +4,36 @@ import User from "../models/userModel.js"
 
 export const generateWeeklyMealPlan = async (req, res) => {
     try {
+        
         const sessionUser = req.session.user;
-        const username = sessionUser?.auth?.username;
+        const userId =  sessionUser?._id;
 
-        if (!username) {
-            return res.status(400).json({ error: "Username not found."})
-        }
-
-        const user = await User.findOne({ "auth.username" : username});
+        
+        const user = await User.findOne(userId);
 
         if (!user) {
             return res.status(404).json({ error: "User not found."});
         }
+        
 
         const { restrictions, preferences, budget_php, biometrics, dietDuration_days, mealsPerDay } = user;
+
+        console.log("User data:", {
+            restrictions,
+            preferences,
+            budget_php,
+            biometrics,
+            dietDuration_days,
+            mealsPerDay
+        });
+
+        if (
+            !restrictions || !preferences || !budget_php ||
+            !biometrics || !dietDuration_days || !mealsPerDay
+        ) {
+            return res.status(400).json({ error: "Missing user data for meal plan generation." });
+        }
+
         const targetCalories = biometrics?.targetCalories || 2000;
 
         const existingActivePlan = await MealPlan.findOne({ user: user._id, active: true });
