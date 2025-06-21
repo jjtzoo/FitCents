@@ -30,7 +30,8 @@ const recipeSchema = mongoose.Schema({
             'Mediterranean',
             'Chinese',
             'Italian',
-            'Mexican'
+            'Mexican',
+            'Western'
         ],
         required: true
     },
