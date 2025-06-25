@@ -3,6 +3,8 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { UserContext } from "../context/UserContext";
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const LogoutButton = () => {
   const { setUser, setLoading } = useContext(UserContext);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -11,7 +13,7 @@ const LogoutButton = () => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await axios.post("http://localhost:4000/api/auth/logout");
+      await axios.post(`${apiURL}/api/auth/logout`);
       localStorage.clear();
       sessionStorage.clear();
       setUser(null);

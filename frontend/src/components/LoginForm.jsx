@@ -67,13 +67,13 @@ const LoginForm = () => {
                 </h2>
 
                 {errorMsg && (
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-red-500 text-sm text-center"
-                >
-                    {errorMsg}
-                </motion.p>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-red-500 text-sm text-center"
+                    >
+                        {errorMsg}
+                    </motion.p>
                 )}
 
                 <div className="space-y-1">

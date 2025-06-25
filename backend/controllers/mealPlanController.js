@@ -1,8 +1,8 @@
 import MealPlan from "../models/mealPlanModel.js";
 import Recipe from "../models/recipeModel.js";
 import User from "../models/userModel.js"
+import { buildRecipeQuery, buildMealPlan, shuffle, round } from "../utils/mealPlanner.util.js";
 
-const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
 export const generateWeeklyMealPlan = async (req, res) => {
     try {
@@ -11,12 +11,11 @@ export const generateWeeklyMealPlan = async (req, res) => {
         const userId =  sessionUser?._id;
 
         const user = await User.findById(userId);
-        console.log("Fetched user:", user);
+        console.log("Fetched user:", user.auth?.username);
 
         if (!user) {
             return res.status(404).json({ error: "User not found."});
         }
-        
 
         const { restrictions = [], preferences = [], budget_php, biometrics, dietDuration_days, mealsPerDay } = user;
 
@@ -30,10 +29,13 @@ export const generateWeeklyMealPlan = async (req, res) => {
         });
 
         if (
-            !restrictions || !preferences || !budget_php ||
-            !biometrics || !dietDuration_days || !mealsPerDay
+            !dietDuration_days || !budget_php ||!biometrics || !mealsPerDay
         ) {
             return res.status(400).json({ error: "Missing user data for meal plan generation." });
+        }
+
+        if (dietDuration_days <= 0 || mealsPerDay <= 0) {
+            return res.status(400).json({ error: "Invalid diet duration or meal frequency"});
         }
 
         const totalMealsNeeded = dietDuration_days * mealsPerDay;
@@ -47,52 +49,49 @@ export const generateWeeklyMealPlan = async (req, res) => {
         }
         
         const kcalPerMeal = targetCalories / mealsPerDay;
-        const kcalMin = .90 * kcalPerMeal;
-        const kcalMax = 1.10 * kcalPerMeal;
+        const kcalMin = 0.85 * kcalPerMeal;
+        const kcalMax = 1.15 * kcalPerMeal;
 
-        const costPerMeal = budget_php / (dietDuration_days * mealsPerDay);
-        const costMin = .85 * costPerMeal;
-        const costMax = 1.05 * costPerMeal;
+        const costPerMeal = budget_php / totalMealsNeeded;
+        const costMin = 0.85 * costPerMeal;
+        const costMax = 1.15 * costPerMeal;
 
-        const recipeQuery = {
-            caloriesPerServing : {$lte: kcalMax, $gte: kcalMin},
-            totalMealCost: { $lte: costMax, $gte: costMin}
-        };
+        // MAIN QUERY
 
-        if (restrictions.length > 0) {
-            recipeQuery.restrictions = { $nin: restrictions }
-        }
+        const recipeQuery = buildRecipeQuery({ kcalMin, kcalMax, costMin, costMax, restrictions, preferences});
+        console.log("Recipe queries: ", recipeQuery)
+        let matchingRecipes = await Recipe.find(recipeQuery);
 
-        if (preferences.length > 0) {
-            recipeQuery.cuisine = { $in: preferences };
-        }
+        console.log("Matched Recipes:", matchingRecipes.length, matchingRecipes.map(recipe => recipe.label));
 
-        const matchingRecipes = await Recipe.find(recipeQuery);
-        console.log("Recipe Query:", recipeQuery);
-        console.log("Target meals needed:", dietDuration_days * mealsPerDay);
-        
         if (!matchingRecipes.length) {
-            return res.status(400).json({ error: "No matching recipes found."});
+           console.warn("No matches. Trying relaxed query");
+           const fallbackQuery = buildRecipeQuery({
+            kcalMin: kcalMin * 0.9,
+            kcalMax: kcalMax * 1.1,
+            costMin: costMin * 0.8,
+            costMax: costMax * 1.2,
+            restrictions,
+            preferences
+           });
+
+           matchingRecipes = await Recipe.find(fallbackQuery)
+           console.log("Fallback Query: ", fallbackQuery);
+           if (!matchingRecipes.length) {
+                return res.status(400).json({ error: "No matching recipes found, even with fallback"});
+           }
         }
 
-        const repeatsNeeded = Math.ceil(totalMealsNeeded / matchingRecipes.length);
-        const pool = Array.from({ length: repeatsNeeded }, () => shuffle(matchingRecipes)).flat();
-        const selectedRecipes = pool.slice(0, totalMealsNeeded);
+        const shuffledRecipes = shuffle(matchingRecipes);
+        const selectedRecipes = Array.from({ length: totalMealsNeeded }, (_, index) => {
+            return shuffledRecipes[index % shuffledRecipes.length]
+        }) 
 
-        const mealPlan = [];
-        let recipeIndex = 0;
+        const mealPlan = buildMealPlan(selectedRecipes, dietDuration_days, mealsPerDay)
 
-        for (let day = 0; day < dietDuration_days; day++) {
-            const mealsForDay = [];
-            for (let meal = 0; meal < mealsPerDay; meal++) {
-                mealsForDay.push(selectedRecipes[recipeIndex++]); 
-            }
-            mealPlan.push({ day: day + 1, meals: mealsForDay });
-        }
-
-        const allRecipes = mealPlan.flatMap(e => e.meals);
-        const totalCalories = allRecipes.reduce((sum, r) => sum + r.caloriesPerServing, 0)
-        const totalCost = allRecipes.reduce((sum, r) => sum + r.totalMealCost, 0);
+        const allRecipes = mealPlan.flatMap(day => day.meals);
+        const totalCalories = allRecipes.reduce((sum, recipe) => sum + recipe.caloriesPerServing, 0)
+        const totalCost = allRecipes.reduce((sum, recipe) => sum + recipe.totalMealCost, 0);
 
         const averageCaloriesPerServing = totalCalories / totalMealsNeeded;
         const averageTotalMealCost = totalCost / totalMealsNeeded;
@@ -106,14 +105,15 @@ export const generateWeeklyMealPlan = async (req, res) => {
             dietDuration_days,
             meals: mealPlan.map(day => ({
                 day: day.day,
-                meal: day.meals.map(m => ({
-                    recipe: m._id,
-                    name: m.recipeName,
-                    caloriesPerServing: m.caloriesPerServing,
-                    totalMealCost: m.totalMealCost,
-                    label: m.label,
+                meal: day.meals.map(recipe => ({
+                    recipe: recipe._id,
+                    name: recipe.recipeName,
+                    caloriesPerServing: recipe.caloriesPerServing,
+                    totalMealCost: recipe.totalMealCost,
+                    label: recipe.label,
+                    mealType: recipe.mealType,
                     completed: false,
-                    ingredients: m.ingredients
+                    ingredients: recipe.ingredients
                 }))
             })),
             averageCaloriesPerServing,
