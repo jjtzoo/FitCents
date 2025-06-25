@@ -4,6 +4,8 @@ import axios from "axios";
 import { useUserContext } from "../context/UserContext";
 import { motion } from "framer-motion"
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const LoginForm = () => {
     const navigate = useNavigate();
     const { setUser } = useUserContext();
@@ -20,7 +22,7 @@ const LoginForm = () => {
         setErrorMsg("");
 
         try {
-            const res = await axios.post("http://localhost:4000/api/auth/login", {
+            const res = await axios.post(`${apiURL}/api/auth/login`, {
                 auth: {
                     username,
                     password,
@@ -61,7 +63,7 @@ const LoginForm = () => {
                 className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-100"
             >
                 <h2 className="text-3xl font-bold text-center text-amber-700">
-                Login to FitCents
+                    Login to FitCents
                 </h2>
 
                 {errorMsg && (
@@ -75,47 +77,47 @@ const LoginForm = () => {
                 )}
 
                 <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    Username
-                </label>
-                <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                    <label className="block text-sm font-medium text-gray-700">
+                        Username
+                    </label>
+                    <input
+                        type="text"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                 </div>
 
                 <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                    <label className="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                 </div>
 
                 <div className="flex items-center space-x-2">
-                <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4"
-                />
-                <label className="text-sm text-gray-600">Remember Me</label>
+                    <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="h-4 w-4"
+                    />
+                    <label className="text-sm text-gray-600">Remember Me</label>
                 </div>
 
                 <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50"
-                >
-                {loading ? "Logging in..." : "Login"}
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50"
+                    >
+                    {loading ? "Logging in..." : "Login"}
                 </button>
             </motion.form>
         </main>
