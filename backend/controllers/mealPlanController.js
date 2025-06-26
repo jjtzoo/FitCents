@@ -187,7 +187,7 @@ export const getActiveMealPlan = async (req, res) => {
         const activePlan = await MealPlan.findOne({ user: userId, active: true });
 
         if (!activePlan) {
-            return res.status(404).json({ message: "No active meal plan found." });
+            return res.status(200).json(null);
         }
 
         res.status(200).json(activePlan);

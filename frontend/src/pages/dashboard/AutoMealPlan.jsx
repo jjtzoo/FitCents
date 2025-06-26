@@ -3,10 +3,12 @@ import axios from "axios";
 import MealPlanViewer from "../../components/MealPlanViewer";
 import ConfirmModal from "../../components/ConfirmModal";
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const AutoMealPlan = () => {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
-  const [refreshViewer, setRefreshViewer] = useState(false);
+  const [refreshViewer, setRefreshViewer] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
   const handleGenerate = async () => {
@@ -15,11 +17,12 @@ const AutoMealPlan = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/meal-plan/generate",
+        `${apiURL}/api/meal-plan/generate`,
         {},
         { withCredentials: true }
       );
       setFeedback({ type: "success", message: "Meal plan generated successfully!" });
+      setRefreshViewer(prev => prev + 1);
     } catch (err) {
       const msg = err.response?.data?.error || "An error occurred.";
       setFeedback({ type: "error", message: msg });

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const MealPlanViewer = () => {
   const [mealPlan, setMealPlan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ const MealPlanViewer = () => {
   const handleToggleCompletion = async (planId, day, index) => {
     try {
       const res = await axios.patch(
-        `http://localhost:4000/api/meal-plan/meal-plans/${planId}/toggle`,
+        `${apiURL}/api/meal-plan/meal-plans/${planId}/toggle`,
         { day, index },
         { withCredentials: true }
       );
@@ -34,47 +36,60 @@ const MealPlanViewer = () => {
     }
   };
 
+  const fetchMealPlan = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await axios.get(`${apiURL}/api/meal-plan/active`, {
+        withCredentials: true
+      });
+      const data = res.data;
+
+      if (!data || !data.meals || data.meals.length === 0) {
+        setMealPlan(null);
+        setError("No meal plan found.")
+      } else {
+        setMealPlan(data);
+        setError("");
+      }
+    } catch (err) {
+      const message = err.response?.data?.error || "Failed to fetch meal plan";
+      setError(message);
+      setMealPlan(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGenerateNewPlan = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/meal-plan/generate",
+      setMealPlan(null);
+      setLoading(true)
+      await axios.post(
+        `${apiURL}/api/meal-plan/generate`,
         {},
         { withCredentials: true }
       );
-      setMealPlan(res.data);
+      await fetchMealPlan();
       setArchived(false);
     } catch (err) {
       console.error("Failed to generate new plan:", err.response?.data || err.message);
     }
   };
 
+
   useEffect(() => {
-    const fetchMealPlan = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/api/meal-plan/active", {
-          withCredentials: true
-        });
-        const data = res.data;
-
-        if (!data || !data.meals || data.meals.length === 0) {
-          setMealPlan(null);
-        } else {
-          setMealPlan(data);
-        }
-      } catch (err) {
-        const message = err.response?.data?.error || "Failed to fetch meal plan";
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMealPlan();
   }, []);
 
   if (loading) return <div className="text-center py-8">Loading...</div>;
-  if (error) return <div className="text-red-600 text-center py-8">{error}</div>;
-  if (!mealPlan) return <div className="text-center py-8">No active meal plan.</div>;
+  if (error || !mealPlan) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">{error || "No active meal plan"}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
