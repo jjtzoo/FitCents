@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion'
 import axios from 'axios'
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const RegistrationForm = () => {
     const navigate = useNavigate();
     const [gender, setGender] = useState("");
@@ -116,7 +118,7 @@ const RegistrationForm = () => {
         }
 
         try {
-        const response = await axios.post('http://localhost:4000/api/users/register', userForms);
+        const response = await axios.post(`${apiURL}/api/users/register`, userForms);
 
         console.log("✅ Registered:", response.data);
         alert("Registration successful!");

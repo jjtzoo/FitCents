@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const UserInfo = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -10,7 +12,7 @@ const UserInfo = () => {
     useEffect(() => {
         const fetchProfile = async () => {
         try {
-            const res = await axios.get("http://localhost:4000/api/users/profile", {
+            const res = await axios.get(`${apiURL}/api/users/profile`, {
                 withCredentials: true,
             });
             setUser(res.data);
