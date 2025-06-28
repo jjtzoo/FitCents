@@ -40,6 +40,8 @@ export const login = async (req, res) => {
                 return res.status(500).json({ error: "Failed to create session." });
             }
 
+            console.log("🚀 Cookie about to be sent:", req.session.cookie);
+
             console.log("✅ Session saved, sending cookie...");
             res.status(200).json({ message: "Login Successfully", user: safeUser });
         });
