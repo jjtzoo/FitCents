@@ -2,9 +2,13 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 
 export const login = async (req, res) => {
-    const { username, password } = req.body.auth;
-
     try {
+        const { username, password } = req.body.auth || {};
+
+        if (!username || !password) {
+            return res.status(400).json({ error: "Username and password are required." });
+        }
+
         const user = await User.findOne({ "auth.username" : username.trim().toLowerCase() });
 
         if (!user) {
@@ -36,17 +40,14 @@ export const login = async (req, res) => {
 
         req.session.save(err => {
             if (err) {
-                console.log("❌ Session save error:", err);
+                console.error("Session save error:", err);
                 return res.status(500).json({ error: "Failed to create session." });
             }
 
-            console.log("🚀 Cookie about to be sent:", req.session.cookie);
-
-            console.log("✅ Session saved, sending cookie...");
             res.status(200).json({ message: "Login Successfully", user: safeUser });
         });
     } catch (err) {
-        console.log("Error: ", err);
+        console.error("Login error:", err);
         res.status(500).json({ error: "Internal Server Error."})
     }
 };

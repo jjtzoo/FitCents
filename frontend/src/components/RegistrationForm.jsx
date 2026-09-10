@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { createItem } from '../api/crud'
 import { heightConverter } from '../utils/heightConverter'
 import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 import { conflictMap } from './RegistrationForm/conflictMap'
