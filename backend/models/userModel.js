@@ -12,33 +12,28 @@ const userSchema = new mongoose.Schema({
         default: "regular"
     },
     biometrics: {
-        name : { type: String, required: true},
-        age:{type: Number, required: true},
-        gender: { 
-            type:String, 
-            required: true,
+        name : { type: String },
+        age:{type: Number },
+        gender: {
+            type:String,
             enum: ["male", "female", "non-binary"]
         },
-        height_cm :{ 
-            type: Number, 
-            required: true,
+        height_cm :{
+            type: Number,
             min: 100,
             max: 250
         },
         weight_kg : {
-            type: Number, 
-            required: true,
+            type: Number,
             min: 30,
             max: 300
         },
         activityLevel: {
-            type: String, 
-            required:true,
+            type: String,
             enum: ['sedentary', 'light', 'moderate', 'active', 'veryActive']
         },
-        weightGoal: { 
-            type: String, 
-            required: true, 
+        weightGoal: {
+            type: String,
             enum: ["extreme", "moderate", "light"]
         },
         bmi : { type: Number },
@@ -82,15 +77,22 @@ const userSchema = new mongoose.Schema({
         type: Number, 
         default : 7
     },
-    budget_php: { 
-        type: Number, 
-        required: true 
+    budget_php: {
+        type: Number
     },
     mealsPerDay : {
         type: Number,
         default : 3,
         min: 2,
         max: 5,
+    },
+    isGuest: {
+        type: Boolean,
+        default: false
+    },
+    onboarded: {
+        type: Boolean,
+        default: false
     }
 },
 {timestamps: true});
