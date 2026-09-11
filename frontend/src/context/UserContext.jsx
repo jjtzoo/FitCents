@@ -3,6 +3,8 @@ import axios from "axios";
 
 const UserContext = createContext();
 
+const apiURL = import.meta.env.VITE_API_BASE_URL;
+
 const UserProvider = (props) => {
     const [ user, setUser ] = useState(null);
     const [ loading, setLoading ] = useState(null);
@@ -11,7 +13,9 @@ const UserProvider = (props) => {
     useEffect(() => {
     const fetchSession = async () => {
         try {
-            const { data } = await axios.get("/api/user/profile");
+            const { data } = await axios.get(`${apiURL}/api/users/profile`, {
+                withCredentials: true,
+            });
             setUser(data);
         } catch (err) {
             console.error("User session fetch failed:", err);

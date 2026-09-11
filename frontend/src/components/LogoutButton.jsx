@@ -13,7 +13,7 @@ const LogoutButton = () => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await axios.post(`${apiURL}/api/auth/logout`);
+      await axios.post(`${apiURL}/api/auth/logout`, {}, { withCredentials: true });
       localStorage.clear();
       sessionStorage.clear();
       setUser(null);
