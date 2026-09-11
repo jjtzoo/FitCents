@@ -6,7 +6,6 @@ const UserContext = createContext();
 const UserProvider = (props) => {
     const [ user, setUser ] = useState(null);
     const [ loading, setLoading ] = useState(null);
-    const [ error, setError] = useState(null);
 
     useEffect(() => {
     const fetchSession = async () => {
