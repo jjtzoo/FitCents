@@ -6,45 +6,27 @@ import { calculateCurrentTDEE, calculateUserBMI, calculateUserBMR, targetBMI, ta
 
 // Register
 export const createUser = async (req, res) => {
-    console.log("Incoming registration", JSON.stringify(req.body, null, 2));
     try {
-        const username = req.body.auth.username.trim().toLowerCase();
-        const email = req.body.auth.email.trim().toLowerCase();
-        const password = req.body.auth.password;
+        const username = req.body.auth?.username?.trim().toLowerCase();
+        const password = req.body.auth?.password;
+        const email = req.body.auth?.email?.trim().toLowerCase() || `${username}@guest.fitcents.local`;
 
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: "Missing Required registration fields."})
+        if (!username || !password) {
+            return res.status(400).json({ error: "Username and password are required."})
         }
 
-        const existing = await User.findOne({ 
+        const existing = await User.findOne({
             $or : [
                 { "auth.username": username },
-                { "auth.email": email } 
+                { "auth.email": email }
             ]
         });
         if (existing) {
-            const duplicatedField = existingUser.auth.email === email ? "Email" : "Username";
+            const duplicatedField = existing.auth.email === email ? "Email" : "Username";
             return res.status(409).json({ error: `${duplicatedField} already exists. ` });
         }
-        
-        const {
-            name,
-            weight_kg,
-            height_cm,
-            age,
-            gender,
-            activityLevel,
-            weightGoal
-        } = req.body.biometrics
 
         const passwordHash = await bcrypt.hash(password, 10);
-
-        const userBMI = calculateUserBMI(weight_kg, height_cm);
-        const userBMR = calculateUserBMR(weight_kg, height_cm, age, gender);
-        const userCurrentTDEE = Math.round(calculateCurrentTDEE(userBMR, activityLevel));
-        const userTargetTDEE = Math.round(targetTDEE(userCurrentTDEE, gender, weightGoal));
-        const userTargetBMI = targetBMI(userBMI, age)
-        const userTargetWeight = Math.round(targetWeight(userTargetBMI, height_cm));
 
         const newUser = new User({
             auth: {
@@ -53,20 +35,6 @@ export const createUser = async (req, res) => {
                 passwordHash,
             },
             role: req.body.role || "regular",
-            biometrics: {
-                name,
-                age,
-                gender,
-                height_cm,
-                weight_kg,
-                activityLevel,
-                weightGoal,
-                bmi: userBMI,
-                bmr: userBMR,
-                tdee: userCurrentTDEE,
-                targetCalories: userTargetTDEE,
-                targetWeight_kilo: userTargetWeight
-            },
             restrictions: req.body.restrictions || [],
             preferences: req.body.preferences || [],
             dietDuration_days: req.body.dietDuration_days || 7,
@@ -74,7 +42,23 @@ export const createUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).json(newUser);
+
+        req.session.user = {
+            _id: newUser._id,
+            auth: {
+                username: newUser.auth.username,
+                email: newUser.auth.email,
+            },
+            role: newUser.role,
+        };
+
+        req.session.save(err => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ error: "Failed to create session." });
+            }
+            res.status(201).json(newUser);
+        });
 
     } catch (err) {
         console.log("Creation Error: ", err);
@@ -169,10 +153,12 @@ export const update = async(req, res) => {
             tdee: userCurrentTDEE,
             targetCalories: userTargetTDEE
             }
+
+            newData.onboarded = true;
         }
 
         const putData = await User.findOneAndUpdate(
-            { username },
+            { "auth.username": username },
             newData,
             { new: true, runValidators: true}
         );
