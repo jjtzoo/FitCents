@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { MdPerson } from "react-icons/md";
 import Card from "./ui/Card";
 import PageHeader from "./ui/PageHeader";
-
-const apiURL = import.meta.env.VITE_API_BASE_URL;
+import { useUserContext } from "../context/UserContext";
 
 const Stat = ({ label, value }) => (
     <Card padding="p-4">
@@ -15,28 +12,9 @@ const Stat = ({ label, value }) => (
 );
 
 const UserInfo = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-        try {
-            const res = await axios.get(`${apiURL}/api/users/profile`, {
-                withCredentials: true,
-            });
-            setUser(res.data);
-        } catch {
-            setError("Failed to fetch user profile.");
-        } finally {
-            setLoading(false);
-        }
-        };
-        fetchProfile();
-    }, []);
+    const { user, loading } = useUserContext();
 
     if (loading) return <p className="text-center text-stone-500">Loading profile...</p>;
-    if (error) return <p className="text-center text-red-500">{error}</p>;
     if (!user) return <p className="text-center text-stone-500">No user data available.</p>;
 
     const {

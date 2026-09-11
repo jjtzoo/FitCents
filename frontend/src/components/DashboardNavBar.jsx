@@ -6,6 +6,7 @@ import { UserContext } from "../context/UserContext";
 import LogoutButton from "./LogoutButton";
 import AppHeader from "./AppHeader";
 import Badge from "./ui/Badge";
+import Footer from "./Footer";
 
 const navGroups = [
   {
@@ -112,8 +113,9 @@ const DashboardNavBar = () => {
           </div>
         </div>
         <NavLinks userRole={userRole} />
-        <div className="p-4 border-t border-stone-100">
+        <div className="p-4 border-t border-stone-100 space-y-3">
           <LogoutButton />
+          <Footer compact />
         </div>
       </aside>
 
@@ -160,8 +162,9 @@ const DashboardNavBar = () => {
                 </button>
               </div>
               <NavLinks userRole={userRole} onNavigate={() => setMobileOpen(false)} />
-              <div className="p-4 border-t border-stone-100">
+              <div className="p-4 border-t border-stone-100 space-y-3">
                 <LogoutButton />
+                <Footer compact />
               </div>
             </motion.aside>
           </>

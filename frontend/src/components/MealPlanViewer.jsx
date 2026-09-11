@@ -7,7 +7,7 @@ import PageHeader from "./ui/PageHeader";
 
 const apiURL = import.meta.env.VITE_API_BASE_URL;
 
-const MealPlanViewer = () => {
+const MealPlanViewer = ({ onPlanStatusChange }) => {
   const [mealPlan, setMealPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -51,14 +51,17 @@ const MealPlanViewer = () => {
       if (!data || !data.meals || data.meals.length === 0) {
         setMealPlan(null);
         setError("No meal plan found.")
+        onPlanStatusChange?.(false);
       } else {
         setMealPlan(data);
         setError("");
+        onPlanStatusChange?.(true);
       }
     } catch (err) {
       const message = err.response?.data?.error || "Failed to fetch meal plan";
       setError(message);
       setMealPlan(null);
+      onPlanStatusChange?.(false);
     } finally {
       setLoading(false);
     }

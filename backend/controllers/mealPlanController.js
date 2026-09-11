@@ -1,7 +1,7 @@
 import MealPlan from "../models/mealPlanModel.js";
 import Recipe from "../models/recipeModel.js";
 import User from "../models/userModel.js"
-import { buildRecipeQuery, buildMealPlan, shuffle, round } from "../utils/mealPlanner.util.js";
+import { buildRecipeQuery, buildMealPlan, shuffle, round, sortByClosestMatch } from "../utils/mealPlanner.util.js";
 
 
 export const generateWeeklyMealPlan = async (req, res) => {
@@ -64,6 +64,8 @@ export const generateWeeklyMealPlan = async (req, res) => {
 
         console.log("Matched Recipes:", matchingRecipes.length, matchingRecipes.map(recipe => recipe.label));
 
+        let isClosestMatchSorted = false;
+
         if (!matchingRecipes.length) {
            console.warn("No matches. Trying relaxed query");
            const fallbackQuery = buildRecipeQuery({
@@ -77,12 +79,26 @@ export const generateWeeklyMealPlan = async (req, res) => {
 
            matchingRecipes = await Recipe.find(fallbackQuery)
            console.log("Fallback Query: ", fallbackQuery);
-           if (!matchingRecipes.length) {
-                return res.status(400).json({ error: "No matching recipes found, even with fallback"});
-           }
         }
 
-        const shuffledRecipes = shuffle(matchingRecipes);
+        if (!matchingRecipes.length) {
+            // Last resort: keep dietary restrictions (never compromise on
+            // those) but drop the cost/calorie bounds and cuisine
+            // preference entirely, then pick the closest matches instead
+            // of filtering them out. A loosely-fitting plan beats no plan.
+            console.warn("Still no matches. Trying restrictions-only query");
+            const lastResortQuery = buildRecipeQuery({ restrictions });
+            const anyRecipes = await Recipe.find(lastResortQuery);
+
+            if (!anyRecipes.length) {
+                return res.status(400).json({ error: "No recipes found matching your dietary restrictions." });
+            }
+
+            matchingRecipes = sortByClosestMatch(anyRecipes, kcalPerMeal, costPerMeal);
+            isClosestMatchSorted = true;
+        }
+
+        const shuffledRecipes = isClosestMatchSorted ? matchingRecipes : shuffle(matchingRecipes);
         const selectedRecipes = Array.from({ length: totalMealsNeeded }, (_, index) => {
             return shuffledRecipes[index % shuffledRecipes.length]
         }) 

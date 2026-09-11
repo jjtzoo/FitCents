@@ -1,15 +1,31 @@
 export const round = (num) => Math.round(num);
 
 export const buildRecipeQuery = ({ kcalMin, kcalMax, costMin, costMax, restrictions, preferences}) => {
-    const query = {
-        caloriesPerServing: {$gte : round(kcalMin), $lte : round(kcalMax)},
-        totalMealCost : {$gte: round(costMin), $lte: round(costMax)}
-    };
+    const query = {};
 
+    if (kcalMin != null && kcalMax != null) {
+        query.caloriesPerServing = { $gte: round(kcalMin), $lte: round(kcalMax) };
+    }
+    if (costMin != null && costMax != null) {
+        query.totalMealCost = { $gte: round(costMin), $lte: round(costMax) };
+    }
     if (restrictions?.length) query.restrictions = { $nin: restrictions};
     if (preferences?.length) query.cuisine = {$in: preferences};
 
     return query;
+};
+
+// Sorts recipes by how close they are to the target calorie/cost per meal,
+// so a relaxed/unbounded query still produces a sensible plan instead of a
+// random one.
+export const sortByClosestMatch = (recipes, kcalTarget, costTarget) => {
+    return [...recipes].sort((a, b) => {
+        const scoreA = Math.abs(a.caloriesPerServing - kcalTarget) / kcalTarget
+            + Math.abs(a.totalMealCost - costTarget) / costTarget;
+        const scoreB = Math.abs(b.caloriesPerServing - kcalTarget) / kcalTarget
+            + Math.abs(b.totalMealCost - costTarget) / costTarget;
+        return scoreA - scoreB;
+    });
 };
 
 
