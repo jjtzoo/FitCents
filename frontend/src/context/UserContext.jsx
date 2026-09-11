@@ -8,7 +8,6 @@ const apiURL = import.meta.env.VITE_API_BASE_URL;
 const UserProvider = (props) => {
     const [ user, setUser ] = useState(null);
     const [ loading, setLoading ] = useState(null);
-    const [ error, setError] = useState(null);
 
     useEffect(() => {
     const fetchSession = async () => {

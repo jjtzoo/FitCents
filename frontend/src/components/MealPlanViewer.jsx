@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import Card from "./ui/Card";
+import Button from "./ui/Button";
+import PageHeader from "./ui/PageHeader";
 
 const apiURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -82,7 +85,21 @@ const MealPlanViewer = () => {
     fetchMealPlan();
   }, []);
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="grid gap-6">
+        {[0, 1].map((i) => (
+          <Card key={i} padding="p-4" className="animate-pulse">
+            <div className="h-5 w-24 bg-stone-200 rounded mb-3" />
+            <div className="space-y-2">
+              <div className="h-16 bg-stone-100 rounded-lg" />
+              <div className="h-16 bg-stone-100 rounded-lg" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
   if (error || !mealPlan) {
     return (
       <div className="text-center py-8">
@@ -92,13 +109,13 @@ const MealPlanViewer = () => {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h2 className="text-xl font-bold mb-4 text-center">Your Meal Plan</h2>
+    <div>
+      <PageHeader title="Your Meal Plan" className="mb-6 text-center" />
 
       <div className="grid gap-6">
         {mealPlan.meals.map((day) => (
-          <div key={day.day} className="bg-white rounded-xl shadow-md p-4">
-            <h3 className="text-lg font-semibold mb-2">Day {day.day}</h3>
+          <Card key={day.day} padding="p-4">
+            <h3 className="text-lg font-display font-semibold mb-2 text-stone-900">Day {day.day}</h3>
             <ul className="space-y-2">
               {day.meal.map((m, index) => {
                 const key = `${day.day}-${index}`;
@@ -106,13 +123,13 @@ const MealPlanViewer = () => {
                 return (
                   <li
                     key={index}
-                    className="border rounded-lg p-3 flex flex-col gap-2 bg-gray-50"
+                    className="border border-stone-200 rounded-lg p-3 flex flex-col gap-2 bg-stone-50"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-medium">{m.name}</p>
-                        <p className="text-sm text-gray-600">{m.label}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-medium text-stone-900">{m.name}</p>
+                        <p className="text-sm text-stone-600">{m.label}</p>
+                        <p className="text-sm text-stone-500">
                           {m.caloriesPerServing} kcal • ₱{m.totalMealCost.toFixed(2)}
                         </p>
                       </div>
@@ -120,8 +137,8 @@ const MealPlanViewer = () => {
                         onClick={() => handleToggleCompletion(mealPlan._id, day.day, index)}
                         className={`px-2 py-1 text-xs font-medium rounded-full focus:outline-none ${
                           m.completed
-                            ? "bg-green-200 text-green-800"
-                            : "bg-yellow-100 text-yellow-700"
+                            ? "bg-sage-100 text-sage-700"
+                            : "bg-primary-100 text-primary-700"
                         }`}
                       >
                         {m.completed ? "Completed" : "Pending"}
@@ -131,7 +148,7 @@ const MealPlanViewer = () => {
                     <div className="text-right">
                       <button
                         onClick={() => toggleExpand(day.day, index)}
-                        className="text-xs text-blue-600 hover:underline"
+                        className="text-xs text-primary-600 hover:underline"
                       >
                         {isExpanded ? "Hide Ingredients" : "View Ingredients"}
                       </button>
@@ -140,7 +157,7 @@ const MealPlanViewer = () => {
                     <AnimatePresence>
                       {isExpanded && m.ingredients && (
                         <motion.ul
-                          className="text-sm text-gray-700 pl-4 list-disc"
+                          className="text-sm text-stone-700 pl-4 list-disc"
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
@@ -158,53 +175,45 @@ const MealPlanViewer = () => {
                 );
               })}
             </ul>
-          </div>
+          </Card>
         ))}
       </div>
 
       {archived && (
         <div className="mt-6 text-center">
-          <p className="text-sm font-medium text-gray-600 mb-2">
+          <p className="text-sm font-medium text-stone-600 mb-2">
             🎉 You've completed this meal plan.
           </p>
-          <button
-            onClick={handleGenerateNewPlan}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Generate New Meal Plan
-          </button>
+          <Button onClick={handleGenerateNewPlan}>Generate New Meal Plan</Button>
         </div>
       )}
 
-      <div className="mt-6 text-sm text-center text-gray-500">
+      <div className="mt-6 text-sm text-center text-stone-500">
         Plan ends on: {new Date(mealPlan.expiresAt).toLocaleDateString()}
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
-            <h3 className="text-lg font-semibold mb-4">Generate New Meal Plan?</h3>
-            <p className="text-sm text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <Card className="w-80 text-center" padding="p-6">
+            <h3 className="text-lg font-display font-semibold mb-4 text-stone-900">Generate New Meal Plan?</h3>
+            <p className="text-sm text-stone-600 mb-4">
               You've completed your current meal plan. Would you like to create a new one?
             </p>
             <div className="flex justify-center gap-4">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => {
                   handleGenerateNewPlan();
                   setShowModal(false);
                 }}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 Yes
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
-              >
+              </Button>
+              <Button variant="ghost" onClick={() => setShowModal(false)}>
                 Cancel
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

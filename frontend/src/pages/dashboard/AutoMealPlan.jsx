@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import MealPlanViewer from "../../components/MealPlanViewer";
 import ConfirmModal from "../../components/ConfirmModal";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
 
 const apiURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -16,7 +18,7 @@ const AutoMealPlan = () => {
     setFeedback(null);
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${apiURL}/api/meal-plan/generate`,
         {},
         { withCredentials: true }
@@ -31,27 +33,23 @@ const AutoMealPlan = () => {
     }
   };
     return (
-      <div className="p-4 max-w-4xl mx-auto">
-        <div className="w-full max-w-md mx-auto p-4 bg-white rounded-xl shadow-md text-center">
-          <h2 className="text-xl font-semibold mb-4">Generate Weekly Meal Plan</h2>
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-          >
+      <div className="space-y-6">
+        <Card className="w-full max-w-md mx-auto text-center">
+          <h2 className="text-xl font-display font-semibold mb-4 text-stone-900">Generate Weekly Meal Plan</h2>
+          <Button onClick={handleGenerate} disabled={loading}>
             {loading ? "Generating..." : "Generate Plan"}
-          </button>
+          </Button>
 
           {feedback && (
             <p
               className={`mt-4 text-sm ${
-                feedback.type === "success" ? "text-green-600" : "text-red-600"
+                feedback.type === "success" ? "text-sage-600" : "text-red-600"
               }`}
             >
               {feedback.message}
             </p>
           )}
-        </div>
+        </Card>
         <ConfirmModal
           open={showModal}
           onCancel={() => setShowModal(false)}
@@ -61,7 +59,7 @@ const AutoMealPlan = () => {
           }}
         />
         <MealPlanViewer key={refreshViewer} />
-      </div> 
+      </div>
     )
 }
 

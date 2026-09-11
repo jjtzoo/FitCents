@@ -1,69 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
-.registration-form {
-  @apply mt-24 max-w-xl w-full mx-auto bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-xl shadow-md space-y-6;
+@theme {
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Primary: warm clay/terracotta */
+  --color-primary-50: #fbf1ea;
+  --color-primary-100: #f5dfcf;
+  --color-primary-200: #eabe9f;
+  --color-primary-300: #de9c6e;
+  --color-primary-400: #d0824f;
+  --color-primary-500: #c2703d;
+  --color-primary-600: #a85c2f;
+  --color-primary-700: #854727;
+  --color-primary-800: #62331d;
+  --color-primary-900: #402113;
+
+  /* Secondary: muted sage, for success / healthy states */
+  --color-sage-50: #f1f5ef;
+  --color-sage-100: #dee8d9;
+  --color-sage-200: #c0d3b6;
+  --color-sage-300: #a0be92;
+  --color-sage-400: #85ac74;
+  --color-sage-500: #6b8f71;
+  --color-sage-600: #567359;
+  --color-sage-700: #435a46;
+  --color-sage-800: #314133;
+  --color-sage-900: #202b21;
 }
 
-.registration-fieldset {
-  @apply border border-amber-200 rounded-xl px-4 py-4 sm:p-6 space-y-4;
-}
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 font-sans;
+  }
 
-.registration-legend {
-  @apply text-base sm:text-lg font-semibold text-amber-700 px-2;
-}
-
-/* user authentication */
-.user-auth-section {
-  @apply space-y-4 sm:space-y-6;
-}
-
-.user-auth-section label {
-  @apply block text-sm sm:text-base font-medium text-gray-700 mb-1;
-}
-
-.user-auth-section input,
-.user-auth-section select {
-  @apply w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base;
-}
-
-.registration-submit {
-  @apply w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition text-sm sm:text-base;
-}
-
-/* biometrics section */
-.user-biometrics-section {
-  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
-}
-
-.user-biometrics-section label {
-  @apply block text-sm font-medium text-gray-700 mb-1;
-}
-
-.user-biometrics-section input,
-.user-biometrics-section select {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm;
-}
-
-.user-biometrics-info {
-  @apply text-sm text-gray-500 mt-1;
-}
-
-.user-biometrics-error {
-  @apply text-sm text-red-600 mt-1;
-}
-
-/* gender fieldset */
-
-.gender-radio-group {
-  @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
-}
-
-/* Label for each radio option */
-.gender-radio-label {
-  @apply flex items-center gap-2 text-sm sm:text-base text-gray-700;
-}
-
-/* Optional for radios */
-.gender-radio-input {
-  @apply text-blue-600 focus:ring-blue-500;
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
 }

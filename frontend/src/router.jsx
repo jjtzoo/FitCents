@@ -10,6 +10,7 @@ import Home from "./pages/landing_page/Home";
 import AboutUs from "./pages/landing_page/AboutUs";
 import Login from "./pages/landing_page/Login"
 import Register from "./pages/landing_page/Register";
+import NotFound from "./pages/landing_page/NotFound";
 
 // Pages - Shared/Dashboard
 import UserData from "./pages/dashboard/UserData";
@@ -75,11 +76,15 @@ const router = createBrowserRouter([
             { 
                 path: "allrecipes", element: <AllRecipes />
             },
-            { 
+            {
                 path: "analytics", element: <Analytics />
             }
         ]
-    }     
+    },
+    {
+        path: '*',
+        element: <NotFound />
+    }
 ]);
 
 export default router;

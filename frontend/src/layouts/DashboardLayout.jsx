@@ -12,15 +12,17 @@ const DashboardLayout = () => {
     const needsOnboarding = user && !user.onboarded && !hasLegacyProfile && !dismissed;
 
     return (
-        <>
+        <div className="min-h-screen bg-stone-50">
             <DashboardNavBar />
-            <div className="mt-4 px-4">
-                <Outlet />
-            </div>
+            <main className="md:pl-64">
+                <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
+                    <Outlet />
+                </div>
+            </main>
             {needsOnboarding && (
                 <OnboardingModal onClose={() => setDismissed(true)} />
             )}
-        </>
+        </div>
     )
 }
 

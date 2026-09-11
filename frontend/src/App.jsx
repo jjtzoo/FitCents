@@ -1,4 +1,4 @@
-import { RouterProvider, useNavigate } from "react-router";
+import { RouterProvider } from "react-router";
 import router from "./router.jsx";
 import { UserProvider } from "./context/UserContext.jsx";
 
