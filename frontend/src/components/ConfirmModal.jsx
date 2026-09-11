@@ -1,28 +1,25 @@
+import Card from "./ui/Card";
+import Button from "./ui/Button";
+
 const ConfirmModal = ({ open, onConfirm, onCancel }) => {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-md w-80 text-center">
-            <h2 className="text-lg font-semibold mb-4">Regenerate Meal Plan?</h2>
-            <p className="text-sm text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 px-4">
+            <Card className="w-80 text-center" padding="p-6">
+            <h2 className="text-lg font-display font-semibold mb-4 text-stone-900">Regenerate Meal Plan?</h2>
+            <p className="text-sm text-stone-600 mb-6">
                 This will replace your current plan. Are you sure?
             </p>
-            <div className="flex justify-between">
-                <button
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                onClick={onCancel}
-                >
+            <div className="flex justify-between gap-3">
+                <Button variant="ghost" onClick={onCancel}>
                 Cancel
-                </button>
-                <button
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                onClick={onConfirm}
-                >
+                </Button>
+                <Button variant="danger" onClick={onConfirm}>
                 Yes, Regenerate
-                </button>
+                </Button>
             </div>
-            </div>
+            </Card>
         </div>
     );
 };
