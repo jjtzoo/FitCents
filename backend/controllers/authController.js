@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 export const login = async (req, res) => {
     try {
@@ -49,6 +50,57 @@ export const login = async (req, res) => {
     } catch (err) {
         console.error("Login error:", err);
         res.status(500).json({ error: "Internal Server Error."})
+    }
+};
+
+export const guestLogin = async (req, res) => {
+    try {
+        const suffix = crypto.randomBytes(4).toString("hex");
+        const username = `guest_${suffix}`;
+        const passwordHash = await bcrypt.hash(crypto.randomBytes(16).toString("hex"), 10);
+
+        const guestUser = new User({
+            auth: {
+                username,
+                email: `${username}@guest.fitcents.local`,
+                passwordHash,
+            },
+            role: "regular",
+            isGuest: true,
+        });
+
+        await guestUser.save();
+
+        req.session.user = {
+            _id: guestUser._id,
+            auth: {
+                username: guestUser.auth.username,
+                email: guestUser.auth.email,
+            },
+            role: guestUser.role,
+        };
+
+        const safeUser = {
+            _id: guestUser._id,
+            auth: {
+                username: guestUser.auth.username,
+                email: guestUser.auth.email,
+            },
+            role: guestUser.role,
+            isGuest: true,
+        };
+
+        req.session.save(err => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ error: "Failed to create guest session." });
+            }
+
+            res.status(201).json({ message: "Guest session started", user: safeUser });
+        });
+    } catch (err) {
+        console.error("Guest login error:", err);
+        res.status(500).json({ error: "Internal Server Error." });
     }
 };
 
