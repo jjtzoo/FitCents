@@ -12,10 +12,10 @@ const HomeComponent = () => {
         transition={{ duration: 0.6 }}
         className="max-w-3xl"
       >
-        <h1 className="text-4xl sm:text-5xl font-display font-extrabold text-primary-700 mb-4">
+        <h1 className="text-4xl sm:text-5xl font-display font-extrabold text-primary-700 mb-4 text-balance">
           Eat Smart. Stay Fit. Spend Wisely.
         </h1>
-        <p className="text-lg text-stone-600 mb-6">
+        <p className="text-lg text-stone-600 mb-6 text-balance">
           FitCents helps you plan meals based on your biometrics, food preferences, and daily budget.
           No stress. Just better food decisions powered by smart data.
         </p>

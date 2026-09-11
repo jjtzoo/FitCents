@@ -13,10 +13,10 @@ const AboutUsContent = () => {
             transition={{ duration: 0.6 }}
             className="text-center"
         >
-            <h1 className="text-3xl sm:text-4xl font-display font-bold text-stone-900 mb-4">
+            <h1 className="text-3xl sm:text-4xl font-display font-bold text-stone-900 mb-4 text-balance">
             Helping You Eat Smart, Stay Fit, and Spend Wisely.
             </h1>
-            <p className="text-stone-600 text-lg">
+            <p className="text-stone-600 text-lg max-w-2xl mx-auto">
             FitCents is your personal assistant for healthy, budget-friendly, and convenient meal planning.
             </p>
         </motion.section>
@@ -28,7 +28,7 @@ const AboutUsContent = () => {
             transition={{ duration: 0.5 }}
         >
             <h2 className={sectionTitle}>What is FitCents?</h2>
-            <p className="text-stone-600">
+            <p className="text-stone-600 max-w-3xl">
             FitCents is a personalized meal planning app that generates meals tailored to your nutritional needs, food preferences, and daily budget.
             Whether you're trying to lose weight, gain muscle, or just eat better without breaking the bank, FitCents helps you make smarter choices.
             </p>
@@ -42,7 +42,7 @@ const AboutUsContent = () => {
             transition={{ duration: 0.5 }}
         >
             <h2 className={sectionTitle}>Why We Built It</h2>
-            <p className="text-stone-600">
+            <p className="text-stone-600 max-w-3xl">
             FitCents started as a passion project by <strong>Jorge Jacob Toledo</strong> — a mining engineer turned full-stack developer.
             I built this during coding bootcamp to solve a real-life problem I faced: how to eat right while staying within budget.
             This app reflects my growth, discipline, and deep desire to create something truly useful.

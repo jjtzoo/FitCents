@@ -41,7 +41,8 @@
 }
 
 .registration-form {
-  @apply mt-24 max-w-xl w-full mx-auto bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-2xl shadow-sm border border-stone-200/70 space-y-6;
+  @apply mt-24 max-w-xl w-full mx-auto bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-2xl space-y-6;
+  box-shadow: 0 1px 2px rgba(64, 33, 19, 0.06), 0 8px 24px -12px rgba(64, 33, 19, 0.18);
 }
 
 .registration-fieldset {

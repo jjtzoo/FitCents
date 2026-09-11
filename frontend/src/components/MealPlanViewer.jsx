@@ -85,7 +85,21 @@ const MealPlanViewer = () => {
     fetchMealPlan();
   }, []);
 
-  if (loading) return <div className="text-center py-8 text-stone-500">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="grid gap-6">
+        {[0, 1].map((i) => (
+          <Card key={i} padding="p-4" className="animate-pulse">
+            <div className="h-5 w-24 bg-stone-200 rounded mb-3" />
+            <div className="space-y-2">
+              <div className="h-16 bg-stone-100 rounded-lg" />
+              <div className="h-16 bg-stone-100 rounded-lg" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
   if (error || !mealPlan) {
     return (
       <div className="text-center py-8">
