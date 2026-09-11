@@ -4,14 +4,18 @@ import MealPlanViewer from "../../components/MealPlanViewer";
 import ConfirmModal from "../../components/ConfirmModal";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
+import PageHeader from "../../components/ui/PageHeader";
+import { useUserContext } from "../../context/UserContext";
 
 const apiURL = import.meta.env.VITE_API_BASE_URL;
 
 const AutoMealPlan = () => {
+  const { user } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [refreshViewer, setRefreshViewer] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [hasPlan, setHasPlan] = useState(false);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -32,12 +36,48 @@ const AutoMealPlan = () => {
       setLoading(false);
     }
   };
+
+  const handleGenerateClick = () => {
+    if (hasPlan) {
+      setShowModal(true);
+    } else {
+      handleGenerate();
+    }
+  };
+
+  const targetCalories = user?.biometrics?.targetCalories;
+  const budget = user?.budget_php;
+  const duration = user?.dietDuration_days;
+
     return (
       <div className="space-y-6">
+        <PageHeader eyebrow="Meal Planning" title="Auto Meal Plan" subtitle="Generate a weekly meal plan built around your profile." />
+
         <Card className="w-full max-w-md mx-auto text-center">
-          <h2 className="text-xl font-display font-semibold mb-4 text-stone-900">Generate Weekly Meal Plan</h2>
-          <Button onClick={handleGenerate} disabled={loading}>
-            {loading ? "Generating..." : "Generate Plan"}
+          {(targetCalories || budget || duration) && (
+            <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
+              {targetCalories && (
+                <div>
+                  <p className="text-stone-400 text-xs uppercase tracking-wide">Target</p>
+                  <p className="font-semibold text-stone-900">{Math.round(targetCalories)} kcal</p>
+                </div>
+              )}
+              {budget && (
+                <div>
+                  <p className="text-stone-400 text-xs uppercase tracking-wide">Budget</p>
+                  <p className="font-semibold text-stone-900">₱{budget}</p>
+                </div>
+              )}
+              {duration && (
+                <div>
+                  <p className="text-stone-400 text-xs uppercase tracking-wide">Duration</p>
+                  <p className="font-semibold text-stone-900">{duration} days</p>
+                </div>
+              )}
+            </div>
+          )}
+          <Button onClick={handleGenerateClick} disabled={loading}>
+            {loading ? "Generating..." : hasPlan ? "Regenerate Plan" : "Generate Plan"}
           </Button>
 
           {feedback && (
@@ -58,7 +98,7 @@ const AutoMealPlan = () => {
             handleGenerate();
           }}
         />
-        <MealPlanViewer key={refreshViewer} />
+        <MealPlanViewer key={refreshViewer} onPlanStatusChange={setHasPlan} />
       </div>
     )
 }
