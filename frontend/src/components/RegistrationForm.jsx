@@ -1,6 +1,4 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
-import { createItem } from '../api/crud'
+import { useState } from 'react'
 import { heightConverter } from '../utils/heightConverter'
 import { restrictionOptions } from './RegistrationForm/restrictionOptions'
 import { conflictMap } from './RegistrationForm/conflictMap'
@@ -110,23 +108,23 @@ const RegistrationForm = () => {
     };
 
     const handleRegister = async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
+        setErrorMsg("");
 
         if (!username || !email || !password) {
-        alert("All fields are required.");
+        setErrorMsg("All fields are required.");
         return;
         }
 
+        setLoading(true);
         try {
-        const response = await axios.post(`${apiURL}/api/users/register`, userForms);
-
-        console.log("✅ Registered:", response.data);
-        alert("Registration successful!");
+        await axios.post(`${apiURL}/api/users/register`, userForms);
         navigate("/login")
         } catch (err) {
-        console.error("❌ Registration failed:", err.response?.data || err.message);
         const message = err.response?.data?.error?.message || "Something went wrong.";
-        alert(`Registration failed: ${message}`);
+        setErrorMsg(message);
+        } finally {
+        setLoading(false);
         }
     };
 
@@ -151,17 +149,17 @@ const RegistrationForm = () => {
         budget_php: Number(budget)
     }
 
-    console.log(userForms);
     return (
-        
-        
-        <motion.form 
-            onSubmit={handleRegister} 
+        <motion.form
+            onSubmit={handleRegister}
             className='registration-form'
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
+            {errorMsg && (
+                <p className="text-red-600 text-sm text-center">{errorMsg}</p>
+            )}
             <fieldset className='registration-fieldset'>
                 <legend className='registration-legend'> Registration Form </legend>
                 <section className='user-auth-section'>
@@ -317,14 +315,14 @@ const RegistrationForm = () => {
                     </div>
                 </fieldset>
                 <div className="space-y-2">
-                    <label htmlFor="weightGoal" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="weightGoal" className="block text-sm font-medium text-stone-700">
                         Select Your Weight Loss Goal
                     </label>
                     <select
                         id="weightGoal"
                         value={weightGoal}
                         onChange={(e) => setWeightGoal(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                        className="w-full px-3 py-2 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 text-sm"
                     >
                         <option value="">-- Select a Goal --</option>
                         <option value="extreme">Extreme Weight Loss</option>
@@ -333,8 +331,8 @@ const RegistrationForm = () => {
                     </select>
                 </div>
 
-                <fieldset className="border border-amber-200 rounded-xl p-4 space-y-4">
-                    <legend className="text-lg font-semibold text-amber-700 px-2">Dietary Restrictions</legend>
+                <fieldset className="registration-fieldset">
+                    <legend className="registration-legend">Dietary Restrictions</legend>
 
                     <div className="flex items-center space-x-2">
                         <input
@@ -343,9 +341,9 @@ const RegistrationForm = () => {
                         checked={restrictions.length === 0}
                         onChange={handleRestrictions}
                         id="no-restrictions"
-                        className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
+                        className="w-4 h-4 accent-primary-600 rounded focus:ring-primary-400"
                         />
-                        <label htmlFor="no-restrictions" className="text-sm font-medium text-gray-700">
+                        <label htmlFor="no-restrictions" className="text-sm font-medium text-stone-700">
                         No Restrictions
                         </label>
                     </div>
@@ -361,17 +359,17 @@ const RegistrationForm = () => {
                             disabled={disabledRestrictions.includes(restriction) && !restrictions.includes(restriction)}
                             onChange={handleRestrictions}
                             id={restriction}
-                            className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 disabled:opacity-40"
+                            className="w-4 h-4 accent-primary-600 rounded focus:ring-primary-400 disabled:opacity-40"
                             />
-                            <label htmlFor={restriction} className="text-sm font-medium text-gray-700 capitalize">
+                            <label htmlFor={restriction} className="text-sm font-medium text-stone-700 capitalize">
                             {restriction.replace(/_/g, ' ')}
                             </label>
                         </div>
                         ))}
                     </div>
                     </fieldset>
-                <fieldset className="border border-teal-200 rounded-xl p-4 space-y-4">
-                    <legend className="text-lg font-semibold text-teal-700 px-2">Cuisine Preferences</legend>
+                <fieldset className="border border-sage-200 rounded-xl p-4 space-y-4">
+                    <legend className="font-display text-lg font-semibold text-sage-700 px-2">Cuisine Preferences</legend>
 
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                         {preferenceOption.map((cuisine) => (
@@ -383,9 +381,9 @@ const RegistrationForm = () => {
                             value={cuisine}
                             checked={preferences.includes(cuisine)}
                             onChange={handlePreferences}
-                            className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+                            className="w-4 h-4 accent-sage-600 rounded focus:ring-sage-400"
                             />
-                            <label htmlFor={cuisine} className="text-sm font-medium text-gray-700">
+                            <label htmlFor={cuisine} className="text-sm font-medium text-stone-700">
                             {cuisine}
                             </label>
                         </div>
@@ -394,7 +392,7 @@ const RegistrationForm = () => {
                 </fieldset>
 
                 <div className="space-y-1">
-                    <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="budget" className="block text-sm font-medium text-stone-700">
                         Budget Per Week (₱)
                     </label>
                     <input
@@ -405,7 +403,7 @@ const RegistrationForm = () => {
                         const val = e.target.value;
                         setBudget(val === "" ? null : Number(val));
                         }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        className="w-full px-3 py-2 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                         placeholder="Enter amount in Philippine Peso"
                         min="0"
                     />
@@ -415,7 +413,7 @@ const RegistrationForm = () => {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-2 bg-amber-500 text-white font-semibold rounded-md shadow-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                className="registration-submit disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {loading ? "Registering..." : "Register"}
             </button>

@@ -3,6 +3,9 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
 import { motion } from "framer-motion"
+import Card from "./ui/Card";
+import Input from "./ui/Input";
+import Button from "./ui/Button";
 
 const apiURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -26,7 +29,7 @@ const LoginForm = () => {
                 auth: {
                     username,
                     password,
-                }, 
+                },
             }, {
                 withCredentials: true
             }
@@ -54,71 +57,59 @@ const LoginForm = () => {
     }
 
     return (
-        <main className="min-h-screen bg-amber-50 flex items-center justify-center px-4 py-10">
+        <main className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-10">
             <motion.form
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 onSubmit={handleLogin}
-                className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-100"
+                className="w-full max-w-md"
             >
-                <h2 className="text-3xl font-bold text-center text-amber-700">
-                    Login to FitCents
-                </h2>
+                <Card className="space-y-6" padding="p-8">
+                    <h2 className="text-3xl font-display font-bold text-center text-primary-700">
+                        Login to FitCents
+                    </h2>
 
-                {errorMsg && (
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-red-500 text-sm text-center"
-                    >
-                        {errorMsg}
-                    </motion.p>
-                )}
+                    {errorMsg && (
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm text-center"
+                        >
+                            {errorMsg}
+                        </motion.p>
+                    )}
 
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Username
-                    </label>
-                    <input
+                    <Input
+                        label="Username"
                         type="text"
                         required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                </div>
 
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Password
-                    </label>
-                    <input
+                    <Input
+                        label="Password"
                         type="password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                </div>
 
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="h-4 w-4"
-                    />
-                    <label className="text-sm text-gray-600">Remember Me</label>
-                </div>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="h-4 w-4 accent-primary-600"
+                        />
+                        <label className="text-sm text-stone-600">Remember Me</label>
+                    </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50"
-                    >
-                    {loading ? "Logging in..." : "Login"}
-                </button>
+                    <Button type="submit" disabled={loading} className="w-full">
+                        {loading ? "Logging in..." : "Login"}
+                    </Button>
+                </Card>
             </motion.form>
         </main>
     )
